@@ -1,0 +1,814 @@
+{
+  "total_paises": 100,
+  "brasil_posicao": 76,
+  "brasil": {
+    "country": "Brazil",
+    "score": 53.4,
+    "governance": 59.1,
+    "policies": 55.1,
+    "finance": 33.3,
+    "items": 68
+  },
+  "ranking": [
+    {
+      "country": "Bahrain",
+      "score": 100.0,
+      "governance": 100.0,
+      "policies": 100.0,
+      "finance": 100.0,
+      "items": 23
+    },
+    {
+      "country": "United Arab Emirates",
+      "score": 98.9,
+      "governance": 97.8,
+      "policies": 100.0,
+      "finance": 100.0,
+      "items": 61
+    },
+    {
+      "country": "Rwanda",
+      "score": 98.2,
+      "governance": 98.9,
+      "policies": 96.5,
+      "finance": 100.0,
+      "items": 57
+    },
+    {
+      "country": "Egypt",
+      "score": 97.9,
+      "governance": 100.0,
+      "policies": 98.4,
+      "finance": 90.9,
+      "items": 63
+    },
+    {
+      "country": "Bulgaria",
+      "score": 94.9,
+      "governance": 91.4,
+      "policies": 100.0,
+      "finance": 80.0,
+      "items": 92
+    },
+    {
+      "country": "South Korea",
+      "score": 93.0,
+      "governance": 93.5,
+      "policies": 100.0,
+      "finance": 76.7,
+      "items": 62
+    },
+    {
+      "country": "Venezuela",
+      "score": 92.7,
+      "governance": 97.8,
+      "policies": 90.5,
+      "finance": 83.3,
+      "items": 64
+    },
+    {
+      "country": "France",
+      "score": 92.0,
+      "governance": 94.9,
+      "policies": 86.7,
+      "finance": 100.0,
+      "items": 58
+    },
+    {
+      "country": "Spain",
+      "score": 91.9,
+      "governance": 96.8,
+      "policies": 88.0,
+      "finance": 86.7,
+      "items": 66
+    },
+    {
+      "country": "Guam",
+      "score": 91.1,
+      "governance": 87.1,
+      "policies": 98.4,
+      "finance": 87.5,
+      "items": 60
+    },
+    {
+      "country": "Finland",
+      "score": 89.8,
+      "governance": 92.5,
+      "policies": 100.0,
+      "finance": 60.0,
+      "items": 62
+    },
+    {
+      "country": "Ethiopia",
+      "score": 87.8,
+      "governance": 94.6,
+      "policies": 92.1,
+      "finance": 60.6,
+      "items": 63
+    },
+    {
+      "country": "Germany",
+      "score": 87.1,
+      "governance": 88.2,
+      "policies": 92.1,
+      "finance": 73.3,
+      "items": 62
+    },
+    {
+      "country": "Slovakia",
+      "score": 84.9,
+      "governance": 87.8,
+      "policies": 84.0,
+      "finance": 77.8,
+      "items": 64
+    },
+    {
+      "country": "Tuvalu",
+      "score": 84.1,
+      "governance": 94.6,
+      "policies": 72.0,
+      "finance": 81.8,
+      "items": 67
+    },
+    {
+      "country": "Peru",
+      "score": 83.1,
+      "governance": 89.2,
+      "policies": 87.3,
+      "finance": 57.6,
+      "items": 63
+    },
+    {
+      "country": "Portugal",
+      "score": 82.8,
+      "governance": 86.0,
+      "policies": 86.7,
+      "finance": 63.3,
+      "items": 66
+    },
+    {
+      "country": "Argentina",
+      "score": 82.0,
+      "governance": 86.0,
+      "policies": 92.1,
+      "finance": 51.5,
+      "items": 63
+    },
+    {
+      "country": "Italy",
+      "score": 81.4,
+      "governance": 78.5,
+      "policies": 90.0,
+      "finance": 70.8,
+      "items": 59
+    },
+    {
+      "country": "Zimbabwe",
+      "score": 81.0,
+      "governance": 73.1,
+      "policies": 100.0,
+      "finance": 66.7,
+      "items": 63
+    },
+    {
+      "country": "Ireland",
+      "score": 80.8,
+      "governance": 83.9,
+      "policies": 85.3,
+      "finance": 60.0,
+      "items": 66
+    },
+    {
+      "country": "Hungary",
+      "score": 80.4,
+      "governance": 77.4,
+      "policies": 82.5,
+      "finance": 84.8,
+      "items": 63
+    },
+    {
+      "country": "Lithuania",
+      "score": 78.8,
+      "governance": 79.6,
+      "policies": 79.4,
+      "finance": 76.2,
+      "items": 66
+    },
+    {
+      "country": "Tanzania",
+      "score": 78.7,
+      "governance": 77.0,
+      "policies": 96.8,
+      "finance": 48.5,
+      "items": 61
+    },
+    {
+      "country": "Chile",
+      "score": 78.1,
+      "governance": 83.9,
+      "policies": 89.3,
+      "finance": 36.4,
+      "items": 67
+    },
+    {
+      "country": "Bahamas",
+      "score": 77.2,
+      "governance": 79.6,
+      "policies": 71.4,
+      "finance": 81.8,
+      "items": 63
+    },
+    {
+      "country": "Fiji",
+      "score": 77.0,
+      "governance": 82.8,
+      "policies": 80.9,
+      "finance": 48.1,
+      "items": 61
+    },
+    {
+      "country": "Jamaica",
+      "score": 76.3,
+      "governance": 80.0,
+      "policies": 84.1,
+      "finance": 51.5,
+      "items": 62
+    },
+    {
+      "country": "Vanuatu",
+      "score": 76.1,
+      "governance": 82.1,
+      "policies": 90.5,
+      "finance": 33.3,
+      "items": 60
+    },
+    {
+      "country": "Mexico",
+      "score": 74.6,
+      "governance": 86.0,
+      "policies": 68.3,
+      "finance": 54.5,
+      "items": 63
+    },
+    {
+      "country": "Mozambique",
+      "score": 74.1,
+      "governance": 84.9,
+      "policies": 74.6,
+      "finance": 42.4,
+      "items": 63
+    },
+    {
+      "country": "Saint Lucia",
+      "score": 74.1,
+      "governance": 72.0,
+      "policies": 81.0,
+      "finance": 66.7,
+      "items": 63
+    },
+    {
+      "country": "Croatia",
+      "score": 73.5,
+      "governance": 74.2,
+      "policies": 84.1,
+      "finance": 51.5,
+      "items": 63
+    },
+    {
+      "country": "Costa Rica",
+      "score": 73.0,
+      "governance": 73.1,
+      "policies": 82.5,
+      "finance": 54.5,
+      "items": 63
+    },
+    {
+      "country": "New Zealand",
+      "score": 72.4,
+      "governance": 87.1,
+      "policies": 69.0,
+      "finance": 36.7,
+      "items": 70
+    },
+    {
+      "country": "Latvia",
+      "score": 71.9,
+      "governance": 81.7,
+      "policies": 72.7,
+      "finance": 42.4,
+      "items": 64
+    },
+    {
+      "country": "Azerbaijan",
+      "score": 71.0,
+      "governance": 78.6,
+      "policies": 68.0,
+      "finance": 55.5,
+      "items": 62
+    },
+    {
+      "country": "Philippines",
+      "score": 70.1,
+      "governance": 79.8,
+      "policies": 77.2,
+      "finance": 33.3,
+      "items": 58
+    },
+    {
+      "country": "Slovenia",
+      "score": 69.9,
+      "governance": 75.0,
+      "policies": 68.5,
+      "finance": 33.3,
+      "items": 31
+    },
+    {
+      "country": "Thailand",
+      "score": 69.8,
+      "governance": 68.8,
+      "policies": 82.5,
+      "finance": 48.5,
+      "items": 63
+    },
+    {
+      "country": "Uruguay",
+      "score": 69.8,
+      "governance": 69.9,
+      "policies": 88.9,
+      "finance": 33.3,
+      "items": 63
+    },
+    {
+      "country": "Zambia",
+      "score": 69.8,
+      "governance": 66.7,
+      "policies": 76.0,
+      "finance": 62.5,
+      "items": 64
+    },
+    {
+      "country": "Mongolia",
+      "score": 69.6,
+      "governance": 67.8,
+      "policies": 80.7,
+      "finance": 47.6,
+      "items": 56
+    },
+    {
+      "country": "Marshall Island",
+      "score": 69.4,
+      "governance": 68.8,
+      "policies": 84.1,
+      "finance": 33.3,
+      "items": 60
+    },
+    {
+      "country": "Gambia",
+      "score": 69.3,
+      "governance": 68.8,
+      "policies": 76.8,
+      "finance": 48.5,
+      "items": 75
+    },
+    {
+      "country": "Malta",
+      "score": 68.8,
+      "governance": 66.7,
+      "policies": 76.2,
+      "finance": 60.0,
+      "items": 62
+    },
+    {
+      "country": "Colombia",
+      "score": 68.1,
+      "governance": 75.3,
+      "policies": 64.4,
+      "finance": 57.6,
+      "items": 71
+    },
+    {
+      "country": "Cabo Verde",
+      "score": 67.9,
+      "governance": 74.2,
+      "policies": 80.4,
+      "finance": 23.8,
+      "items": 79
+    },
+    {
+      "country": "Indonesia",
+      "score": 66.7,
+      "governance": 66.7,
+      "policies": 0,
+      "finance": 0,
+      "items": 1
+    },
+    {
+      "country": "Tonga",
+      "score": 66.7,
+      "governance": 78.5,
+      "policies": 61.9,
+      "finance": 42.4,
+      "items": 63
+    },
+    {
+      "country": "Morocco",
+      "score": 66.1,
+      "governance": 66.7,
+      "policies": 76.2,
+      "finance": 45.4,
+      "items": 63
+    },
+    {
+      "country": "Bangladesh",
+      "score": 65.6,
+      "governance": 60.2,
+      "policies": 76.2,
+      "finance": 60.6,
+      "items": 63
+    },
+    {
+      "country": "Uganda",
+      "score": 65.6,
+      "governance": 83.3,
+      "policies": 50.0,
+      "finance": 60.0,
+      "items": 62
+    },
+    {
+      "country": "Canada",
+      "score": 64.6,
+      "governance": 72.2,
+      "policies": 56.0,
+      "finance": 63.3,
+      "items": 65
+    },
+    {
+      "country": "Maldives",
+      "score": 64.4,
+      "governance": 67.9,
+      "policies": 69.8,
+      "finance": 45.5,
+      "items": 60
+    },
+    {
+      "country": "Saint Kitts and Nevis",
+      "score": 63.9,
+      "governance": 63.2,
+      "policies": 82.5,
+      "finance": 30.3,
+      "items": 61
+    },
+    {
+      "country": "Madagascar",
+      "score": 63.6,
+      "governance": 63.1,
+      "policies": 78.9,
+      "finance": 23.8,
+      "items": 54
+    },
+    {
+      "country": "Serbia",
+      "score": 63.5,
+      "governance": 71.0,
+      "policies": 61.9,
+      "finance": 45.5,
+      "items": 63
+    },
+    {
+      "country": "Poland",
+      "score": 61.9,
+      "governance": 62.4,
+      "policies": 66.7,
+      "finance": 51.5,
+      "items": 63
+    },
+    {
+      "country": "Ivory Coast",
+      "score": 61.7,
+      "governance": 58.3,
+      "policies": 73.0,
+      "finance": 48.5,
+      "items": 60
+    },
+    {
+      "country": "Guinea-Bissau",
+      "score": 61.5,
+      "governance": 67.8,
+      "policies": 68.0,
+      "finance": 26.7,
+      "items": 65
+    },
+    {
+      "country": "Ecuador",
+      "score": 61.4,
+      "governance": 69.9,
+      "policies": 66.7,
+      "finance": 27.3,
+      "items": 63
+    },
+    {
+      "country": "Timor-Leste",
+      "score": 61.4,
+      "governance": 79.6,
+      "policies": 57.5,
+      "finance": 33.3,
+      "items": 95
+    },
+    {
+      "country": "Myanmar",
+      "score": 61.0,
+      "governance": 64.0,
+      "policies": 72.2,
+      "finance": 33.3,
+      "items": 53
+    },
+    {
+      "country": "Austria",
+      "score": 60.8,
+      "governance": 65.6,
+      "policies": 52.4,
+      "finance": 63.3,
+      "items": 62
+    },
+    {
+      "country": "Botswana",
+      "score": 60.6,
+      "governance": 54.8,
+      "policies": 77.8,
+      "finance": 42.4,
+      "items": 60
+    },
+    {
+      "country": "North Macedonia",
+      "score": 57.7,
+      "governance": 68.8,
+      "policies": 61.9,
+      "finance": 18.2,
+      "items": 63
+    },
+    {
+      "country": "Tunisia",
+      "score": 57.2,
+      "governance": 60.2,
+      "policies": 61.3,
+      "finance": 39.4,
+      "items": 67
+    },
+    {
+      "country": "Pakistan",
+      "score": 56.8,
+      "governance": 63.4,
+      "policies": 52.4,
+      "finance": 57.6,
+      "items": 91
+    },
+    {
+      "country": "Papua New Guinea",
+      "score": 56.7,
+      "governance": 49.5,
+      "policies": 76.0,
+      "finance": 33.3,
+      "items": 67
+    },
+    {
+      "country": "Micronesia",
+      "score": 56.6,
+      "governance": 61.3,
+      "policies": 60.3,
+      "finance": 36.4,
+      "items": 63
+    },
+    {
+      "country": "Kenya",
+      "score": 55.7,
+      "governance": 54.8,
+      "policies": 64.0,
+      "finance": 39.4,
+      "items": 67
+    },
+    {
+      "country": "Angola",
+      "score": 55.6,
+      "governance": 53.8,
+      "policies": 68.3,
+      "finance": 36.4,
+      "items": 63
+    },
+    {
+      "country": "Montserrat",
+      "score": 55.6,
+      "governance": 46.2,
+      "policies": 74.5,
+      "finance": 50.0,
+      "items": 57
+    },
+    {
+      "country": "Romania",
+      "score": 55.6,
+      "governance": 57.0,
+      "policies": 55.5,
+      "finance": 51.5,
+      "items": 63
+    },
+    {
+      "country": "Brazil",
+      "score": 53.4,
+      "governance": 59.1,
+      "policies": 55.1,
+      "finance": 33.3,
+      "items": 68
+    },
+    {
+      "country": "São Tomé and Príncipe",
+      "score": 52.5,
+      "governance": 55.6,
+      "policies": 65.1,
+      "finance": 21.2,
+      "items": 59
+    },
+    {
+      "country": "Mauritius",
+      "score": 52.4,
+      "governance": 58.1,
+      "policies": 58.7,
+      "finance": 24.2,
+      "items": 63
+    },
+    {
+      "country": "Solomon Islands",
+      "score": 52.4,
+      "governance": 52.7,
+      "policies": 60.3,
+      "finance": 36.4,
+      "items": 63
+    },
+    {
+      "country": "Georgia",
+      "score": 51.9,
+      "governance": 67.7,
+      "policies": 38.1,
+      "finance": 29.6,
+      "items": 61
+    },
+    {
+      "country": "Montenegro",
+      "score": 51.6,
+      "governance": 57.0,
+      "policies": 52.9,
+      "finance": 33.3,
+      "items": 71
+    },
+    {
+      "country": "Puerto Rico",
+      "score": 50.3,
+      "governance": 53.6,
+      "policies": 53.7,
+      "finance": 28.6,
+      "items": 53
+    },
+    {
+      "country": "Eritrea",
+      "score": 49.1,
+      "governance": 66.7,
+      "policies": 35.3,
+      "finance": 33.3,
+      "items": 36
+    },
+    {
+      "country": "Ukraine",
+      "score": 49.0,
+      "governance": 52.7,
+      "policies": 50.4,
+      "finance": 33.3,
+      "items": 87
+    },
+    {
+      "country": "Paraguay",
+      "score": 48.8,
+      "governance": 68.8,
+      "policies": 38.7,
+      "finance": 15.1,
+      "items": 67
+    },
+    {
+      "country": "Andorra",
+      "score": 47.7,
+      "governance": 64.5,
+      "policies": 34.9,
+      "finance": 5.6,
+      "items": 58
+    },
+    {
+      "country": "Antigua and Barbuda",
+      "score": 44.3,
+      "governance": 51.6,
+      "policies": 30.4,
+      "finance": 57.1,
+      "items": 61
+    },
+    {
+      "country": "Belize",
+      "score": 43.6,
+      "governance": 43.7,
+      "policies": 53.3,
+      "finance": 30.3,
+      "items": 55
+    },
+    {
+      "country": "Albania",
+      "score": 42.9,
+      "governance": 47.3,
+      "policies": 52.4,
+      "finance": 12.1,
+      "items": 63
+    },
+    {
+      "country": "Honduras",
+      "score": 42.9,
+      "governance": 43.0,
+      "policies": 58.7,
+      "finance": 12.1,
+      "items": 63
+    },
+    {
+      "country": "Palau",
+      "score": 42.9,
+      "governance": 43.0,
+      "policies": 46.0,
+      "finance": 36.4,
+      "items": 63
+    },
+    {
+      "country": "Namibia",
+      "score": 40.7,
+      "governance": 46.7,
+      "policies": 37.9,
+      "finance": 30.3,
+      "items": 63
+    },
+    {
+      "country": "Sudan",
+      "score": 39.3,
+      "governance": 53.8,
+      "policies": 34.7,
+      "finance": 9.1,
+      "items": 67
+    },
+    {
+      "country": "Curaçao",
+      "score": 38.1,
+      "governance": 46.2,
+      "policies": 39.7,
+      "finance": 11.1,
+      "items": 56
+    },
+    {
+      "country": "Syria",
+      "score": 35.0,
+      "governance": 33.3,
+      "policies": 36.9,
+      "finance": 33.3,
+      "items": 82
+    },
+    {
+      "country": "Somalia",
+      "score": 33.9,
+      "governance": 37.0,
+      "policies": 31.7,
+      "finance": 30.3,
+      "items": 59
+    },
+    {
+      "country": "Saint Maarten",
+      "score": 27.8,
+      "governance": 24.4,
+      "policies": 36.4,
+      "finance": 11.1,
+      "items": 54
+    },
+    {
+      "country": "Bolivia",
+      "score": 24.4,
+      "governance": 33.3,
+      "policies": 16.0,
+      "finance": 18.2,
+      "items": 67
+    },
+    {
+      "country": "Libya",
+      "score": 22.0,
+      "governance": 33.3,
+      "policies": 0.0,
+      "finance": 29.6,
+      "items": 53
+    },
+    {
+      "country": "American Samoa",
+      "score": 13.8,
+      "governance": 22.6,
+      "policies": 5.6,
+      "finance": 0.0,
+      "items": 53
+    }
+  ]
+}

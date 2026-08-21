@@ -1,0 +1,35 @@
+{
+  "global": {
+    "brasil_posicao": 76,
+    "total_paises": 100,
+    "brasil_score": 53.4
+  },
+  "destaques": [
+    {
+      "tipo": "alerta",
+      "titulo": "Roraima tem o maior descompasso entre risco e preparação",
+      "texto": "Com 3,396 focos de calor em 2026 e score Farol de apenas 13/100, é o estado mais exposto e menos preparado.",
+      "uf": "RR"
+    },
+    {
+      "tipo": "info",
+      "titulo": "Média nacional dos estados: 49/100",
+      "texto": "Dos 27 estados, apenas 13 atingem score 50 ou mais. O Brasil ocupa a 76ª posição entre 100 países."
+    },
+    {
+      "tipo": "info",
+      "titulo": "Financiamento é o pilar mais fraco (40/100)",
+      "texto": "Governança: 62 | Políticas: 44 | Financiamento: 40. A maioria dos estados não monitora gastos climáticos nem mobiliza investimento privado."
+    },
+    {
+      "tipo": "alerta",
+      "titulo": "60,288 focos de calor registrados em 2026",
+      "texto": "Liderando: MT (9,960), PA (6,896), BA (6,834). Dados INPE até 14/ago."
+    },
+    {
+      "tipo": "destaque",
+      "titulo": "Amplitude: São Paulo (91) vs Roraima (13)",
+      "texto": "A diferença de 78 pontos entre o melhor e pior estado revela desigualdade profunda na preparação climática."
+    }
+  ]
+}

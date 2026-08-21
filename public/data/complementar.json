@@ -1,0 +1,164 @@
+{
+  "AC": {
+    "populacao": 884372,
+    "focos_calor_2026": 280,
+    "focos_calor_2025": 4368,
+    "municipios_monitorados_cemaden": 14
+  },
+  "AL": {
+    "populacao": 3145209,
+    "focos_calor_2026": 408,
+    "focos_calor_2025": 456,
+    "municipios_monitorados_cemaden": 31
+  },
+  "AM": {
+    "populacao": 4218750,
+    "focos_calor_2026": 1516,
+    "focos_calor_2025": 9090,
+    "municipios_monitorados_cemaden": 58
+  },
+  "AP": {
+    "populacao": 806517,
+    "focos_calor_2026": 134,
+    "focos_calor_2025": 1896,
+    "municipios_monitorados_cemaden": 5
+  },
+  "BA": {
+    "populacao": 14192530,
+    "focos_calor_2026": 6834,
+    "focos_calor_2025": 24178,
+    "municipios_monitorados_cemaden": 67
+  },
+  "CE": {
+    "populacao": 9039956,
+    "focos_calor_2026": 1540,
+    "focos_calor_2025": 15704,
+    "municipios_monitorados_cemaden": 55
+  },
+  "DF": {
+    "populacao": 3094325,
+    "focos_calor_2026": 144,
+    "focos_calor_2025": 468,
+    "municipios_monitorados_cemaden": 1
+  },
+  "ES": {
+    "populacao": 4108508,
+    "focos_calor_2026": 654,
+    "focos_calor_2025": 770,
+    "municipios_monitorados_cemaden": 74
+  },
+  "GO": {
+    "populacao": 7264038,
+    "focos_calor_2026": 2042,
+    "focos_calor_2025": 9756,
+    "municipios_monitorados_cemaden": 12
+  },
+  "MA": {
+    "populacao": 6853753,
+    "focos_calor_2026": 6558,
+    "focos_calor_2025": 48600,
+    "municipios_monitorados_cemaden": 88
+  },
+  "MG": {
+    "populacao": 21411890,
+    "focos_calor_2026": 3762,
+    "focos_calor_2025": 17432,
+    "municipios_monitorados_cemaden": 162
+  },
+  "MS": {
+    "populacao": 2922291,
+    "focos_calor_2026": 1358,
+    "focos_calor_2025": 3688,
+    "municipios_monitorados_cemaden": 14
+  },
+  "MT": {
+    "populacao": 3837872,
+    "focos_calor_2026": 9960,
+    "focos_calor_2025": 22122,
+    "municipios_monitorados_cemaden": 16
+  },
+  "PA": {
+    "populacao": 8627523,
+    "focos_calor_2026": 6896,
+    "focos_calor_2025": 36734,
+    "municipios_monitorados_cemaden": 44
+  },
+  "PB": {
+    "populacao": 3965805,
+    "focos_calor_2026": 310,
+    "focos_calor_2025": 2122,
+    "municipios_monitorados_cemaden": 24
+  },
+  "PE": {
+    "populacao": 9160768,
+    "focos_calor_2026": 858,
+    "focos_calor_2025": 4670,
+    "municipios_monitorados_cemaden": 72
+  },
+  "PI": {
+    "populacao": 3175210,
+    "focos_calor_2026": 2650,
+    "focos_calor_2025": 23612,
+    "municipios_monitorados_cemaden": 31
+  },
+  "PR": {
+    "populacao": 11928576,
+    "focos_calor_2026": 988,
+    "focos_calor_2025": 3624,
+    "municipios_monitorados_cemaden": 39
+  },
+  "RJ": {
+    "populacao": 16782887,
+    "focos_calor_2026": 442,
+    "focos_calor_2025": 1024,
+    "municipios_monitorados_cemaden": 66
+  },
+  "RN": {
+    "populacao": 3446921,
+    "focos_calor_2026": 370,
+    "focos_calor_2025": 1278,
+    "municipios_monitorados_cemaden": 28
+  },
+  "RO": {
+    "populacao": 1874903,
+    "focos_calor_2026": 398,
+    "focos_calor_2025": 3758,
+    "municipios_monitorados_cemaden": 9
+  },
+  "RR": {
+    "populacao": 738772,
+    "focos_calor_2026": 3396,
+    "focos_calor_2025": 3078,
+    "municipios_monitorados_cemaden": 4
+  },
+  "RS": {
+    "populacao": 11422973,
+    "focos_calor_2026": 872,
+    "focos_calor_2025": 3240,
+    "municipios_monitorados_cemaden": 56
+  },
+  "SC": {
+    "populacao": 8074862,
+    "focos_calor_2026": 370,
+    "focos_calor_2025": 1048,
+    "municipios_monitorados_cemaden": 169
+  },
+  "SE": {
+    "populacao": 2291845,
+    "focos_calor_2026": 188,
+    "focos_calor_2025": 618,
+    "municipios_monitorados_cemaden": 8
+  },
+  "SP": {
+    "populacao": 46134162,
+    "focos_calor_2026": 1990,
+    "focos_calor_2025": 14462,
+    "municipios_monitorados_cemaden": 138
+  },
+  "TO": {
+    "populacao": 1575536,
+    "focos_calor_2026": 5370,
+    "focos_calor_2025": 23060,
+    "municipios_monitorados_cemaden": 10
+  }
+}
