@@ -9,6 +9,7 @@ import DadosComplementares from './DadosComplementares'
 import DadosCPTEC from './DadosCPTEC'
 import MapaRiscoEstado from './MapaRiscoEstado'
 import AlertasClima from './AlertasClima'
+import OuvidoriaLink from './OuvidoriaLink'
 
 function PilarCard({ pilarKey, indicadores, score }) {
   const pilar = PILARES[pilarKey]
@@ -56,6 +57,7 @@ export default function Dashboard({ ente, todos, onVoltar, onComparar }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* Nav */}
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <button onClick={onVoltar} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#888', background: 'none', border: 'none', cursor: 'pointer' }}>
           <ArrowLeft size={14} /> Voltar
@@ -78,8 +80,16 @@ export default function Dashboard({ ente, todos, onVoltar, onComparar }) {
         </div>
       </div>
 
+      {/* 🔥 DIAGNÓSTICO IA NO TOPO — maior engajamento */}
+      <DiagnosticoIA ente={ente} todos={todos} />
+
+      {/* Ouvidoria */}
+      <OuvidoriaLink uf={uf} nome={nome} />
+
+      {/* Dados complementares */}
       <DadosComplementares uf={uf} />
 
+      {/* CPTEC + Mapa de risco lado a lado */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <DadosCPTEC uf={uf} />
         <MapaRiscoEstado uf={uf} />
@@ -102,13 +112,13 @@ export default function Dashboard({ ente, todos, onVoltar, onComparar }) {
         </div>
       </div>
 
-      {/* IA + Iniciativas + Alertas */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-        <DiagnosticoIA ente={ente} todos={todos} />
+      {/* Iniciativas + Alertas */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <IniciativasEstado ente={ente} />
         <AlertasClima uf={uf} />
       </div>
 
+      {/* Evidências da auditoria */}
       <ComentariosAuditoria ente={ente} />
     </div>
   )
