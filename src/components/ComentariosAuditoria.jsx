@@ -1,10 +1,108 @@
 import { useState } from 'react'
-import { FileText, ChevronDown, ChevronRight } from 'lucide-react'
+import { FileText, ChevronDown, ChevronRight, X, Maximize2 } from 'lucide-react'
 import { PILARES, getEscala } from '../data/constants'
+
+function EvidenciaModal({ isOpen, onClose, comentario, indicadorKey, escala }) {
+  if (!isOpen) return null
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 20,
+      }}
+      onClick={onClose}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: 'white', borderRadius: 16, maxWidth: 700, width: '100%',
+          maxHeight: '80vh', display: 'flex', flexDirection: 'column',
+          boxShadow: '0 25px 50px rgba(0,0,0,0.15)',
+        }}
+      >
+        {/* Modal header */}
+        <div style={{
+          padding: '16px 20px', borderBottom: '1px solid #e8e8e4',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <FileText size={16} style={{ color: '#3B82F6' }} />
+            <div>
+              <span style={{ fontSize: 14, fontWeight: 700, fontFamily: "'DM Sans'" }}>
+                Evidência — {indicadorKey}
+              </span>
+              {escala && (
+                <span style={{
+                  marginLeft: 8, fontSize: 10, fontWeight: 600,
+                  padding: '2px 8px', borderRadius: 10,
+                  background: escala.cor + '22', color: escala.cor,
+                }}>
+                  {escala.label}
+                </span>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              background: '#f5f5f3', border: 'none', borderRadius: 8,
+              width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', color: '#888',
+            }}
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Modal body */}
+        <div style={{
+          padding: 24, overflowY: 'auto', flex: 1,
+        }} className="custom-scrollbar">
+          <p style={{
+            fontSize: 10, color: '#999', textTransform: 'uppercase',
+            letterSpacing: '0.1em', fontWeight: 600, marginBottom: 12,
+          }}>
+            Comentário do auditor do Tribunal de Contas
+          </p>
+          <p style={{
+            fontSize: 14, color: '#444', lineHeight: 1.75,
+            whiteSpace: 'pre-wrap',
+          }}>
+            {comentario}
+          </p>
+        </div>
+
+        {/* Modal footer */}
+        <div style={{
+          padding: '12px 20px', borderTop: '1px solid #e8e8e4',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        }}>
+          <span style={{ fontSize: 10, color: '#ccc' }}>
+            Fonte: Painel ClimaBrasil · Auditoria TCU
+          </span>
+          <button
+            onClick={onClose}
+            style={{
+              padding: '6px 16px', borderRadius: 8, fontSize: 12,
+              fontWeight: 600, background: '#f0f0ee', border: 'none',
+              cursor: 'pointer', color: '#555',
+            }}
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function ComentariosAuditoria({ ente }) {
   const [pilarAberto, setPilarAberto] = useState(null)
   const [compAberto, setCompAberto] = useState(null)
+  const [modalData, setModalData] = useState(null)
 
   const { indicadores, comentarios } = ente
 
@@ -24,7 +122,7 @@ export default function ComentariosAuditoria({ ente }) {
         <h3 className="font-semibold text-sm">Evidências e Justificativas da Auditoria</h3>
       </div>
       <p className="text-xs text-[#999] mb-5">
-        Comentários dos auditores do Tribunal de Contas para cada indicador avaliado. Clique para expandir.
+        Comentários dos auditores do Tribunal de Contas para cada indicador avaliado. Clique para expandir e use o botão para visualizar a evidência completa.
       </p>
 
       <div className="space-y-2">
@@ -80,6 +178,7 @@ export default function ComentariosAuditoria({ ente }) {
                             const comment = comentarios[key]
                             const valor = ind?.valor ?? 0
                             const escItem = getEscala(valor)
+                            const isLong = comment && comment.length > 300
 
                             return (
                               <div key={key} className="border-l-2 pl-3 py-1" style={{ borderColor: escItem.cor }}>
@@ -88,11 +187,41 @@ export default function ComentariosAuditoria({ ente }) {
                                   <span className="text-[10px] font-medium" style={{ color: escItem.cor }}>
                                     {escItem.label}
                                   </span>
+                                  {comment && (
+                                    <button
+                                      onClick={() => setModalData({ key, comment, escala: escItem })}
+                                      title="Ver evidência completa"
+                                      style={{
+                                        marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4,
+                                        padding: '2px 8px', borderRadius: 6, fontSize: 10,
+                                        background: '#F0F9FF', color: '#0EA5E9', border: 'none',
+                                        cursor: 'pointer', fontWeight: 500,
+                                      }}
+                                    >
+                                      <Maximize2 size={10} />
+                                      Ver completo
+                                    </button>
+                                  )}
                                 </div>
                                 {comment ? (
-                                  <p className="text-xs text-[#888] leading-relaxed">
-                                    {comment.length > 400 ? comment.slice(0, 400) + '...' : comment}
-                                  </p>
+                                  <div>
+                                    <p className="text-xs text-[#888] leading-relaxed">
+                                      {isLong ? comment.slice(0, 300) + '...' : comment}
+                                    </p>
+                                    {isLong && (
+                                      <button
+                                        onClick={() => setModalData({ key, comment, escala: escItem })}
+                                        style={{
+                                          marginTop: 6, fontSize: 11, color: '#0EA5E9',
+                                          background: 'none', border: 'none', cursor: 'pointer',
+                                          fontWeight: 500, textDecoration: 'underline',
+                                          textDecorationStyle: 'dotted',
+                                        }}
+                                      >
+                                        Ler evidência completa →
+                                      </button>
+                                    )}
+                                  </div>
                                 ) : (
                                   <p className="text-xs text-[#ccc] italic">Sem comentário registrado.</p>
                                 )}
@@ -109,6 +238,15 @@ export default function ComentariosAuditoria({ ente }) {
           </div>
         ))}
       </div>
+
+      {/* Modal de evidência completa */}
+      <EvidenciaModal
+        isOpen={!!modalData}
+        onClose={() => setModalData(null)}
+        comentario={modalData?.comment || ''}
+        indicadorKey={modalData?.key || ''}
+        escala={modalData?.escala}
+      />
     </div>
   )
 }

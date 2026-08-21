@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Newspaper, Loader2, RefreshCw } from 'lucide-react'
+import { Newspaper, Loader2, RefreshCw, ExternalLink } from 'lucide-react'
 
 function buildPrompt(ente) {
   return `Pesquise e liste de 4 a 6 iniciativas ou notícias RECENTES (2025-2026) sobre ações climáticas, ambientais ou de adaptação do estado/cidade de ${ente.nome} (${ente.uf}), Brasil.
@@ -11,11 +11,14 @@ Para cada iniciativa, forneça EXATAMENTE neste formato JSON (array):
     "descricao": "Descrição em 1-2 frases do que é e qual o impacto",
     "tipo": "lei|programa|investimento|parceria|infraestrutura|monitoramento",
     "data_aprox": "mês/ano aproximado",
-    "fonte": "nome do veículo ou órgão"
+    "fonte": "nome do veículo ou órgão",
+    "url": "URL completa da notícia ou página oficial (se disponível, caso contrário use string vazia)"
   }
 ]
 
 Inclua coisas como: planos climáticos aprovados, programas de adaptação, leis ambientais, investimentos em resiliência, parcerias com organismos internacionais, obras de contenção/drenagem, sistemas de alerta, programas de reflorestamento, fundos climáticos.
+
+IMPORTANTE: Para o campo "url", forneça o link real da notícia original sempre que possível. Priorize fontes como sites de governo estadual (.gov.br), agências de notícias, jornais locais, portais ambientais. Se não tiver certeza da URL exata, use string vazia "".
 
 Se não encontrar informações específicas para ${ente.nome}, indique iniciativas federais que impactam o estado/cidade.
 
@@ -47,7 +50,7 @@ export default function IniciativasEstado({ ente }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{ parts: [{ text: buildPrompt(ente) }] }],
-            generationConfig: { temperature: 0.3, maxOutputTokens: 1000 },
+            generationConfig: { temperature: 0.3, maxOutputTokens: 1200 },
           }),
         }
       )
@@ -120,6 +123,8 @@ export default function IniciativasEstado({ ente }) {
         <div className="space-y-3">
           {iniciativas.map((ini, i) => {
             const tipo = TIPO_CORES[ini.tipo] || TIPO_CORES.programa
+            const hasUrl = ini.url && ini.url.trim().length > 0
+
             return (
               <div
                 key={i}
@@ -132,9 +137,30 @@ export default function IniciativasEstado({ ente }) {
                   </span>
                 </div>
                 <p className="text-xs text-[#777] leading-relaxed mb-2">{ini.descricao}</p>
-                <div className="flex items-center gap-3 text-[10px] text-[#999]">
-                  {ini.data_aprox && <span>{ini.data_aprox}</span>}
-                  {ini.fonte && <span>· {ini.fonte}</span>}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 text-[10px] text-[#999]">
+                    {ini.data_aprox && <span>{ini.data_aprox}</span>}
+                    {ini.fonte && <span>· {ini.fonte}</span>}
+                  </div>
+                  {hasUrl && (
+                    <a
+                      href={ini.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        fontSize: 11, color: '#0EA5E9', fontWeight: 500,
+                        textDecoration: 'none', padding: '3px 10px',
+                        borderRadius: 6, background: '#F0F9FF',
+                        transition: 'all 0.15s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#E0F2FE'; e.currentTarget.style.color = '#0284C7' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = '#F0F9FF'; e.currentTarget.style.color = '#0EA5E9' }}
+                    >
+                      <ExternalLink size={10} />
+                      Ver notícia
+                    </a>
+                  )}
                 </div>
               </div>
             )

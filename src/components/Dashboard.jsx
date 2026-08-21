@@ -6,6 +6,7 @@ import DiagnosticoIA from './DiagnosticoIA'
 import IniciativasEstado from './IniciativasEstado'
 import ComentariosAuditoria from './ComentariosAuditoria'
 import DadosComplementares from './DadosComplementares'
+import DadosCPTEC from './DadosCPTEC'
 import AlertasClima from './AlertasClima'
 
 function PilarCard({ pilarKey, indicadores, score }) {
@@ -77,6 +78,8 @@ export default function Dashboard({ ente, todos, onVoltar, onComparar }) {
       </div>
 
       <DadosComplementares uf={uf} />
+
+      <DadosCPTEC uf={uf} />
 
       {/* Pilares + Radar */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 240px', gap: 16 }}>

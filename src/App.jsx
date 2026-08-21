@@ -91,7 +91,7 @@ export default function App() {
       </main>
 
       <footer style={{ borderTop: '1px solid #e8e8e4', padding: '10px 24px', textAlign: 'center', fontSize: 11, color: '#ccc' }}>
-        Farol Clima · ClimatonBrasil 2026 · Dados: Painel ClimaBrasil (TCU)
+        Farol Clima · ClimatonBrasil 2026 · Dados: Painel ClimaBrasil (TCU) · CPTEC/INPE · INMET
       </footer>
 
       <Comparador todos={todos} isOpen={compOpen} onClose={() => setCompOpen(false)} enteInicial={compEnte} />
