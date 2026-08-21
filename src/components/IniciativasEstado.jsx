@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Newspaper, Loader2, RefreshCw, ExternalLink } from 'lucide-react'
+import { Newspaper, Loader2, RefreshCw, ExternalLink, Search } from 'lucide-react'
 
 function buildPrompt(ente) {
   return `Pesquise e liste de 4 a 6 iniciativas ou notícias RECENTES (2025-2026) sobre ações climáticas, ambientais ou de adaptação do estado/cidade de ${ente.nome} (${ente.uf}), Brasil.
@@ -7,22 +7,38 @@ function buildPrompt(ente) {
 Para cada iniciativa, forneça EXATAMENTE neste formato JSON (array):
 [
   {
-    "titulo": "Nome da iniciativa ou manchete",
+    "titulo": "Nome da iniciativa ou manchete exata da notícia",
     "descricao": "Descrição em 1-2 frases do que é e qual o impacto",
     "tipo": "lei|programa|investimento|parceria|infraestrutura|monitoramento",
     "data_aprox": "mês/ano aproximado",
-    "fonte": "nome do veículo ou órgão",
-    "url": "URL completa da notícia ou página oficial (se disponível, caso contrário use string vazia)"
+    "fonte": "nome do veículo ou órgão (ex: G1, Agência Brasil, Gov.br, Portal do Estado)",
+    "busca": "palavras-chave para buscar a notícia original (ex: plano clima São Paulo 2025 PEMC)"
   }
 ]
 
 Inclua coisas como: planos climáticos aprovados, programas de adaptação, leis ambientais, investimentos em resiliência, parcerias com organismos internacionais, obras de contenção/drenagem, sistemas de alerta, programas de reflorestamento, fundos climáticos.
 
-IMPORTANTE: Para o campo "url", forneça o link real da notícia original sempre que possível. Priorize fontes como sites de governo estadual (.gov.br), agências de notícias, jornais locais, portais ambientais. Se não tiver certeza da URL exata, use string vazia "".
+IMPORTANTE: o campo "busca" deve conter palavras-chave específicas o bastante para encontrar a notícia original no Google. Inclua nomes de leis, programas, números, datas e o nome da fonte.
 
 Se não encontrar informações específicas para ${ente.nome}, indique iniciativas federais que impactam o estado/cidade.
 
 Responda APENAS com o JSON, sem markdown, sem backticks, sem texto adicional.`
+}
+
+function buildSearchUrl(ini) {
+  // Construir URL de busca do Google News a partir do título + fonte + estado
+  const query = ini.busca
+    ? ini.busca
+    : `${ini.titulo} ${ini.fonte || ''}`
+  return `https://www.google.com/search?q=${encodeURIComponent(query.trim())}&tbm=nws`
+}
+
+function buildGoogleUrl(ini) {
+  // Busca geral do Google (fallback mais amplo)
+  const query = ini.busca
+    ? ini.busca
+    : `${ini.titulo} ${ini.fonte || ''}`
+  return `https://www.google.com/search?q=${encodeURIComponent(query.trim())}`
 }
 
 export default function IniciativasEstado({ ente }) {
@@ -58,7 +74,6 @@ export default function IniciativasEstado({ ente }) {
       const data = await res.json()
       const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
 
-      // Limpar e parsear JSON
       const clean = text.replace(/```json\n?/g, '').replace(/```/g, '').trim()
       const parsed = JSON.parse(clean)
       setIniciativas(parsed)
@@ -123,12 +138,13 @@ export default function IniciativasEstado({ ente }) {
         <div className="space-y-3">
           {iniciativas.map((ini, i) => {
             const tipo = TIPO_CORES[ini.tipo] || TIPO_CORES.programa
-            const hasUrl = ini.url && ini.url.trim().length > 0
+            const newsUrl = buildSearchUrl(ini)
+            const googleUrl = buildGoogleUrl(ini)
 
             return (
               <div
                 key={i}
-                className="p-4 rounded-xl bg-[#FAFAF8]  hover:border-[#ddd] transition-all"
+                className="p-4 rounded-xl bg-[#FAFAF8] hover:border-[#ddd] transition-all"
               >
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <h4 className="text-sm font-medium text-[#333] leading-snug">{ini.titulo}</h4>
@@ -136,35 +152,59 @@ export default function IniciativasEstado({ ente }) {
                     {tipo.label}
                   </span>
                 </div>
-                <p className="text-xs text-[#777] leading-relaxed mb-2">{ini.descricao}</p>
-                <div className="flex items-center justify-between">
+                <p className="text-xs text-[#777] leading-relaxed mb-3">{ini.descricao}</p>
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <div className="flex items-center gap-3 text-[10px] text-[#999]">
                     {ini.data_aprox && <span>{ini.data_aprox}</span>}
                     {ini.fonte && <span>· {ini.fonte}</span>}
                   </div>
-                  {hasUrl && (
+
+                  {/* Botões de redirecionamento real */}
+                  <div style={{ display: 'flex', gap: 6 }}>
                     <a
-                      href={ini.url}
+                      href={newsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
                         display: 'inline-flex', alignItems: 'center', gap: 4,
-                        fontSize: 11, color: '#0EA5E9', fontWeight: 500,
-                        textDecoration: 'none', padding: '3px 10px',
+                        fontSize: 10, color: '#0EA5E9', fontWeight: 600,
+                        textDecoration: 'none', padding: '4px 10px',
                         borderRadius: 6, background: '#F0F9FF',
-                        transition: 'all 0.15s',
+                        border: '1px solid #E0F2FE',
+                        transition: 'all 0.15s', cursor: 'pointer',
                       }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#E0F2FE'; e.currentTarget.style.color = '#0284C7' }}
-                      onMouseLeave={e => { e.currentTarget.style.background = '#F0F9FF'; e.currentTarget.style.color = '#0EA5E9' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#DBEAFE'; e.currentTarget.style.borderColor = '#93C5FD' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = '#F0F9FF'; e.currentTarget.style.borderColor = '#E0F2FE' }}
                     >
                       <ExternalLink size={10} />
                       Ver notícia
                     </a>
-                  )}
+                    <a
+                      href={googleUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        fontSize: 10, color: '#888', fontWeight: 500,
+                        textDecoration: 'none', padding: '4px 8px',
+                        borderRadius: 6, background: '#F5F5F3',
+                        border: '1px solid #E8E8E4',
+                        transition: 'all 0.15s', cursor: 'pointer',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#EEEEEC'; e.currentTarget.style.color = '#555' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = '#F5F5F3'; e.currentTarget.style.color = '#888' }}
+                    >
+                      <Search size={10} />
+                      Buscar
+                    </a>
+                  </div>
                 </div>
               </div>
             )
           })}
+          <p className="text-[9px] text-[#ccc] mt-2">
+            Os links redirecionam para o Google Notícias com palavras-chave da iniciativa. A fonte original pode ser acessada nos resultados da busca.
+          </p>
         </div>
       )}
     </div>
