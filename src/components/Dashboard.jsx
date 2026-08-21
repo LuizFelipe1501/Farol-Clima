@@ -7,6 +7,7 @@ import IniciativasEstado from './IniciativasEstado'
 import ComentariosAuditoria from './ComentariosAuditoria'
 import DadosComplementares from './DadosComplementares'
 import DadosCPTEC from './DadosCPTEC'
+import MapaRiscoEstado from './MapaRiscoEstado'
 import AlertasClima from './AlertasClima'
 
 function PilarCard({ pilarKey, indicadores, score }) {
@@ -79,7 +80,10 @@ export default function Dashboard({ ente, todos, onVoltar, onComparar }) {
 
       <DadosComplementares uf={uf} />
 
-      <DadosCPTEC uf={uf} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <DadosCPTEC uf={uf} />
+        <MapaRiscoEstado uf={uf} />
+      </div>
 
       {/* Pilares + Radar */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 240px', gap: 16 }}>
