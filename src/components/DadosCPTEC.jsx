@@ -316,10 +316,18 @@ export default function DadosCPTEC({ uf }) {
             <Thermometer size={14} style={{ color: '#0EA5E9' }} />
             <span style={{ fontSize: 11, color: '#555', fontWeight: 600 }}>Agora em {cidadeNome}:</span>
           </div>
-          <span style={{ fontFamily: "'DM Sans'", fontSize: 20, fontWeight: 800 }}>{currentWeather.temp ?? currentWeather.temperatura}°C</span>
-          {currentWeather.umidade != null && <span style={{ fontSize: 11, color: '#888' }}>💧 {currentWeather.umidade}%</span>}
-          {(currentWeather.vento ?? currentWeather.vento_intensidade) != null && <span style={{ fontSize: 11, color: '#888' }}>🌬️ {currentWeather.vento ?? currentWeather.vento_intensidade} km/h</span>}
-          {currentWeather.condicao_Desc && <span style={{ fontSize: 11, color: '#888' }}>· {currentWeather.condicao_Desc}</span>}
+          {(currentWeather.temp ?? currentWeather.temperatura ?? currentWeather.temp_max) != null && (
+            <span style={{ fontFamily: "'DM Sans'", fontSize: 20, fontWeight: 800 }}>{currentWeather.temp ?? currentWeather.temperatura ?? currentWeather.temp_max}°C</span>
+          )}
+          {(currentWeather.umidade ?? currentWeather.umidade_relativa) != null && (
+            <span style={{ fontSize: 11, color: '#888' }}>💧 {currentWeather.umidade ?? currentWeather.umidade_relativa}%</span>
+          )}
+          {(currentWeather.vento_intensidade ?? currentWeather.vento ?? currentWeather.vento_vel) != null && (
+            <span style={{ fontSize: 11, color: '#888' }}>🌬️ {currentWeather.vento_intensidade ?? currentWeather.vento ?? currentWeather.vento_vel} km/h</span>
+          )}
+          {(currentWeather.condicao_Desc ?? currentWeather.condicao_desc ?? currentWeather.condicao) && (
+            <span style={{ fontSize: 11, color: '#888' }}>· {currentWeather.condicao_Desc ?? currentWeather.condicao_desc ?? currentWeather.condicao}</span>
+          )}
           <span style={{ fontSize: 9, color: '#aaa', marginLeft: 'auto' }}>ICAO: {icao}</span>
         </div>
       )}
