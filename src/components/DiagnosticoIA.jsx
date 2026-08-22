@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Sparkles, Loader2, RefreshCw } from 'lucide-react'
 import { PILARES, getEscala } from '../data/constants'
 
@@ -96,6 +96,11 @@ export default function DiagnosticoIA({ ente, todos }) {
       setLoading(false)
     }
   }
+
+  // Auto-gerar ao abrir a página do estado
+  useEffect(() => {
+    if (ente?.uf) gerar()
+  }, [ente?.uf])
 
   return (
     <div className="card" style={{ padding: 24, border: '2px solid #F59E0B33', background: 'linear-gradient(135deg, #FFFBEB 0%, white 30%)' }}>

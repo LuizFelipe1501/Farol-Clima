@@ -211,16 +211,41 @@ export default function DadosCPTEC({ uf }) {
       const capitalData = resCapital.status === 'fulfilled' ? resCapital.value : null
 
       if (!forecastData) {
-        // Fallback final: tenta previsão 1 dia
+        // Fallback 1: tenta previsão 1 dia na BrasilAPI
         try {
           const fb = await fetch(`https://brasilapi.com.br/api/cptec/v1/clima/previsao/${cityCode}`)
           if (fb.ok) {
             setForecast(await fb.json())
           } else {
-            throw new Error('API CPTEC temporariamente indisponível')
+            throw new Error('fallback1 failed')
           }
         } catch(e) {
-          throw new Error('API CPTEC temporariamente indisponível. Tente novamente em alguns minutos.')
+          // Fallback 2: CPTEC XML direto
+          try {
+            const xmlRes = await fetch(`http://servicos.cptec.inpe.br/XML/cidade/${cityCode}/previsao.xml`)
+            if (xmlRes.ok) {
+              const xmlText = await xmlRes.text()
+              const parser = new DOMParser()
+              const xmlDoc = parser.parseFromString(xmlText, 'text/xml')
+              const previsoes = xmlDoc.querySelectorAll('previsao')
+              const clima = []
+              previsoes.forEach(p => {
+                clima.push({
+                  data: p.querySelector('dia')?.textContent || '',
+                  condicao: p.querySelector('tempo')?.textContent || 'nd',
+                  min: parseInt(p.querySelector('minima')?.textContent || '0'),
+                  max: parseInt(p.querySelector('maxima')?.textContent || '0'),
+                  indice_uv: parseFloat(p.querySelector('iuv')?.textContent || '0'),
+                })
+              })
+              const cidade = xmlDoc.querySelector('nome')?.textContent || cidadeNome
+              setForecast({ cidade, estado: uf, clima })
+            } else {
+              throw new Error('XML failed')
+            }
+          } catch(e2) {
+            throw new Error('Previsão CPTEC temporariamente indisponível. Tente novamente em alguns minutos.')
+          }
         }
       } else {
         setForecast(forecastData)

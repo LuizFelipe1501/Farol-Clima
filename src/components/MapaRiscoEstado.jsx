@@ -135,7 +135,16 @@ function RecenterMap({ center, zoom }) {
   return null
 }
 
+function FlyToZone({ zone }) {
+  const map = useMap()
+  if (zone) {
+    map.flyTo([zone.lat, zone.lon], 15, { duration: 0.8 })
+  }
+  return null
+}
+
 export default function MapaRiscoEstado({ uf }) {
+  const [focusedZone, setFocusedZone] = useState(null)
   const capital = UF_CAPITAL[uf] || uf
   const center = UF_CENTER[uf]
   const zones = ZONES[uf] || []
@@ -180,6 +189,7 @@ export default function MapaRiscoEstado({ uf }) {
           scrollWheelZoom={true}
         >
           <RecenterMap center={[center.lat, center.lon]} zoom={center.zoom} />
+          <FlyToZone zone={focusedZone} />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -227,20 +237,35 @@ export default function MapaRiscoEstado({ uf }) {
           ))}
         </div>
 
-        {/* Lista das zonas críticas */}
+        {/* Lista das zonas críticas — clique para navegar no mapa */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {zones.filter(z => z.risco === 'muito_alto' || z.risco === 'alto').map((z, i) => {
             const rc = RISK_COLORS[z.risco]
+            const isFocused = focusedZone?.nome === z.nome
             return (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 10px', borderRadius: 8, background: rc.bg, fontSize: 11 }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: rc.fill }} />
+              <div
+                key={i}
+                onClick={() => setFocusedZone(z)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '7px 12px', borderRadius: 8,
+                  background: isFocused ? rc.fill + '20' : rc.bg,
+                  border: isFocused ? `2px solid ${rc.fill}` : `1px solid transparent`,
+                  fontSize: 11, cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: rc.fill, flexShrink: 0 }} />
                 <span style={{ fontWeight: 600, color: '#333' }}>{z.nome}</span>
                 <span style={{ color: '#888', fontSize: 10 }}>— {z.tipo}</span>
-                <span style={{ marginLeft: 'auto', color: rc.fill, fontWeight: 600, fontSize: 10 }}>{rc.label}</span>
+                <span style={{ marginLeft: 'auto', color: rc.fill, fontWeight: 600, fontSize: 10, flexShrink: 0 }}>
+                  {isFocused ? '📍 Focado' : rc.label}
+                </span>
               </div>
             )
           })}
         </div>
+        <p style={{ fontSize: 9, color: '#aaa', marginTop: 6 }}>Clique em uma zona para navegar até ela no mapa ↑</p>
 
         <p style={{ fontSize: 9, color: '#ccc', marginTop: 8 }}>
           Fonte: CEMADEN · SGB/CPRM · Defesa Civil ·{' '}

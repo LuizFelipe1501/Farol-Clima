@@ -1,4 +1,4 @@
-import { ArrowLeft, GitCompareArrows } from 'lucide-react'
+import { ArrowLeft, GitCompareArrows, Info } from 'lucide-react'
 import { PILARES, getEscala } from '../data/constants'
 import { getCorScore, getLabelScore } from '../utils/scoring'
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts'
@@ -10,18 +10,54 @@ import DadosCPTEC from './DadosCPTEC'
 import MapaRiscoEstado from './MapaRiscoEstado'
 import AlertasClima from './AlertasClima'
 import OuvidoriaEstado from './OuvidoriaEstado'
+import { useState } from 'react'
+
+function Tooltip({ text, children }) {
+  const [show, setShow] = useState(false)
+  return (
+    <span style={{ position: 'relative', display: 'inline-flex' }}>
+      <span
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onClick={() => setShow(!show)}
+        style={{ cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+      >
+        {children}
+      </span>
+      {show && (
+        <span style={{
+          position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+          background: '#1a1a1a', color: 'white', padding: '8px 12px', borderRadius: 8,
+          fontSize: 11, lineHeight: 1.5, width: 260, zIndex: 100,
+          boxShadow: '0 4px 16px rgba(0,0,0,0.15)', marginBottom: 6, fontWeight: 400,
+        }}>
+          {text}
+          <span style={{
+            position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
+            borderLeft: '6px solid transparent', borderRight: '6px solid transparent',
+            borderTop: '6px solid #1a1a1a',
+          }} />
+        </span>
+      )}
+    </span>
+  )
+}
 
 function PilarCard({ pilarKey, indicadores, score }) {
   const pilar = PILARES[pilarKey]
   return (
     <div className="card" style={{ padding: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
         <h3 style={{ fontFamily: "'DM Sans'", fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: pilar.cor, display: 'inline-block' }} />
           {pilar.label}
+          <Tooltip text={pilar.desc}>
+            <Info size={14} style={{ color: '#bbb', marginLeft: 2 }} />
+          </Tooltip>
         </h3>
         <span style={{ fontFamily: "'DM Sans'", fontSize: 20, fontWeight: 800, color: getCorScore(score) }}>{score}</span>
       </div>
+      <p style={{ fontSize: 11, color: '#aaa', marginBottom: 14, lineHeight: 1.4 }}>{pilar.desc}</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {Object.entries(pilar.componentes).map(([compId, comp]) => {
           const vals = comp.itens.map(item => indicadores[`${compId}.${item}`]?.valor ?? 0)
@@ -29,9 +65,14 @@ function PilarCard({ pilarKey, indicadores, score }) {
           const escala = getEscala(media)
           return (
             <div key={compId}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                <span style={{ color: '#888' }}>{compId} · {comp.label}</span>
-                <span style={{ color: escala.cor, fontWeight: 600 }}>{escala.label}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4, alignItems: 'center' }}>
+                <span style={{ color: '#888', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  {compId} · {comp.label}
+                  <Tooltip text={comp.desc}>
+                    <Info size={12} style={{ color: '#ccc', cursor: 'help' }} />
+                  </Tooltip>
+                </span>
+                <span style={{ color: escala.cor, fontWeight: 600, flexShrink: 0 }}>{escala.label}</span>
               </div>
               <div style={{ height: 6, background: '#f0f0ee', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{ height: '100%', borderRadius: 3, width: `${media * 100}%`, background: escala.cor, transition: 'width 0.5s' }} />
