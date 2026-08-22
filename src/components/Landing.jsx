@@ -68,7 +68,7 @@ export default function Landing({ onEntrar, totalEstados, totalCapitais }) {
 
           {/* Headline */}
           <h1 style={{ fontFamily: "'DM Sans'", fontSize: 'clamp(24px, 5vw, 40px)', fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.02em', marginBottom: 14, color: '#1a1a1a' }}>
-            Seu estado está preparado<br/>para o <span style={{ color: '#0F766E' }}>El Niño 2026</span>?
+            Seu estado está preparado<br/>para <span style={{ color: '#0F766E' }}>Mudanças Climáticas ?</span>?
           </h1>
 
           <p style={{ fontSize: 15, color: '#777', maxWidth: 480, margin: '0 auto', lineHeight: 1.7, marginBottom: 28 }}>
