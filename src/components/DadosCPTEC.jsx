@@ -334,29 +334,6 @@ export default function DadosCPTEC({ uf }) {
         </button>
       </div>
 
-      {/* Condições atuais do aeroporto */}
-      {currentWeather && (
-        <div style={{ background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: 10, padding: '10px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Thermometer size={14} style={{ color: '#0EA5E9' }} />
-            <span style={{ fontSize: 11, color: '#555', fontWeight: 600 }}>Agora em {cidadeNome}:</span>
-          </div>
-          {(currentWeather.temp ?? currentWeather.temperatura ?? currentWeather.temp_max) != null && (
-            <span style={{ fontFamily: "'DM Sans'", fontSize: 20, fontWeight: 800 }}>{currentWeather.temp ?? currentWeather.temperatura ?? currentWeather.temp_max}°C</span>
-          )}
-          {(currentWeather.umidade ?? currentWeather.umidade_relativa) != null && (
-            <span style={{ fontSize: 11, color: '#888' }}>💧 {currentWeather.umidade ?? currentWeather.umidade_relativa}%</span>
-          )}
-          {(currentWeather.vento_intensidade ?? currentWeather.vento ?? currentWeather.vento_vel) != null && (
-            <span style={{ fontSize: 11, color: '#888' }}>🌬️ {currentWeather.vento_intensidade ?? currentWeather.vento ?? currentWeather.vento_vel} km/h</span>
-          )}
-          {(currentWeather.condicao_Desc ?? currentWeather.condicao_desc ?? currentWeather.condicao) && (
-            <span style={{ fontSize: 11, color: '#888' }}>· {currentWeather.condicao_Desc ?? currentWeather.condicao_desc ?? currentWeather.condicao}</span>
-          )}
-          <span style={{ fontSize: 9, color: '#aaa', marginLeft: 'auto' }}>ICAO: {icao}</span>
-        </div>
-      )}
-
       {/* Temperatura */}
       <p style={{ fontSize: 10, color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600, marginBottom: 8 }}>🌡️ Temperatura prevista — próximos {dias.length} dias</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 16 }}>

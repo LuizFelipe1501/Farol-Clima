@@ -6,6 +6,7 @@ import DiagnosticoIA from './DiagnosticoIA'
 import IniciativasEstado from './IniciativasEstado'
 import ComentariosAuditoria from './ComentariosAuditoria'
 import DadosComplementares from './DadosComplementares'
+import DadosCPTEC from './DadosCPTEC'
 import MapaRiscoEstado from './MapaRiscoEstado'
 import AlertasClima from './AlertasClima'
 import OuvidoriaEstado from './OuvidoriaEstado'
@@ -133,10 +134,13 @@ export default function Dashboard({ ente, todos, onVoltar, onComparar }) {
       {/* Ouvidoria */}
       <OuvidoriaEstado uf={uf} nome={nome} />
 
-      {/* Dados complementares + Alertas */}
+      {/* Dados complementares + Alertas + CPTEC */}
       <DadosComplementares uf={uf} />
 
-      <AlertasClima uf={uf} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <AlertasClima uf={uf} />
+        <DadosCPTEC uf={uf} />
+      </div>
 
       {/* Pilares + Radar */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 240px', gap: 16 }}>
