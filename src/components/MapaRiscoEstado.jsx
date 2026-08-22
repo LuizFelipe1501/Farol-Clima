@@ -316,9 +316,9 @@ export default function MapaRiscoEstado({ uf }) {
           ))}
         </div>
 
-        {/* Lista das zonas críticas — clique para navegar no mapa */}
+        {/* Lista de TODAS as zonas de risco — clique para navegar no mapa */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {zones.filter(z => z.risco === 'muito_alto' || z.risco === 'alto').map((z, i) => {
+          {zones.map((z, i) => {
             const rc = RISK_COLORS[z.risco]
             const isFocused = focusedZone?.nome === z.nome
             return (
