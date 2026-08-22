@@ -1,420 +1,351 @@
-import { useState, useEffect, useRef } from 'react'
-import { AlertTriangle, Loader2, RefreshCw, MapPin, ExternalLink, Shield, Flame, Droplets } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { AlertTriangle, Loader2, RefreshCw, ExternalLink, Info } from 'lucide-react'
 
 /*
-  Mapa de zonas de risco por estado.
-  - Dados: CEMADEN GeoServer WFS (municípios monitorados com setores de risco)
-  - Visualização: SVG com municípios plotados por lat/lon
-  - Fontes complementares: INPE focos de calor, IBGE áreas de risco
+  Mapa de zonas de risco DENTRO da capital de cada estado.
+  Mostra bairros/regiões com classificação de risco climático.
+  Dados: CEMADEN setores de risco + base local de bairros vulneráveis conhecidos.
 */
 
-/* ── Bounding boxes dos estados (lat/lon approximados) ── */
-const UF_BOUNDS = {
-  AC: { minLat: -11.2, maxLat: -7.1, minLon: -73.9, maxLon: -66.6 },
-  AL: { minLat: -10.5, maxLat: -8.8, minLon: -38.2, maxLon: -35.2 },
-  AM: { minLat: -9.8, maxLat: 2.3, minLon: -73.8, maxLon: -56.1 },
-  AP: { minLat: -1.2, maxLat: 4.4, minLon: -54.9, maxLon: -49.9 },
-  BA: { minLat: -18.4, maxLat: -8.5, minLon: -46.6, maxLon: -37.3 },
-  CE: { minLat: -7.9, maxLat: -2.8, minLon: -41.4, maxLon: -37.2 },
-  DF: { minLat: -16.1, maxLat: -15.5, minLon: -48.3, maxLon: -47.3 },
-  ES: { minLat: -21.3, maxLat: -17.9, minLon: -41.9, maxLon: -39.7 },
-  GO: { minLat: -19.5, maxLat: -12.4, minLon: -53.3, maxLon: -45.9 },
-  MA: { minLat: -10.3, maxLat: -1.0, minLon: -48.8, maxLon: -41.8 },
-  MG: { minLat: -23.0, maxLat: -14.2, minLon: -51.1, maxLon: -39.9 },
-  MS: { minLat: -24.1, maxLat: -17.2, minLon: -58.2, maxLon: -53.3 },
-  MT: { minLat: -18.1, maxLat: -7.3, minLon: -61.6, maxLon: -50.2 },
-  PA: { minLat: -9.8, maxLat: 2.6, minLon: -58.9, maxLon: -46.1 },
-  PB: { minLat: -8.3, maxLat: -6.0, minLon: -38.8, maxLon: -34.8 },
-  PE: { minLat: -9.5, maxLat: -7.3, minLon: -41.4, maxLon: -34.8 },
-  PI: { minLat: -10.9, maxLat: -2.7, minLon: -45.9, maxLon: -40.4 },
-  PR: { minLat: -26.7, maxLat: -22.5, minLon: -54.6, maxLon: -48.0 },
-  RJ: { minLat: -23.4, maxLat: -20.8, minLon: -44.9, maxLon: -40.9 },
-  RN: { minLat: -6.98, maxLat: -4.83, minLon: -37.3, maxLon: -35.0 },
-  RO: { minLat: -13.7, maxLat: -7.98, minLon: -66.6, maxLon: -59.8 },
-  RR: { minLat: -1.5, maxLat: 5.3, minLon: -64.8, maxLon: -58.9 },
-  RS: { minLat: -33.8, maxLat: -27.1, minLon: -57.6, maxLon: -49.7 },
-  SC: { minLat: -29.4, maxLat: -25.9, minLon: -54.0, maxLon: -48.6 },
-  SE: { minLat: -11.6, maxLat: -9.5, minLon: -38.2, maxLon: -36.4 },
-  SP: { minLat: -25.3, maxLat: -19.8, minLon: -53.1, maxLon: -44.2 },
-  TO: { minLat: -13.5, maxLat: -5.2, minLon: -50.7, maxLon: -45.7 },
-}
-
 const RISK_COLORS = {
-  muito_alto: { fill: '#DC2626', stroke: '#991B1B', label: 'Muito Alto' },
-  alto:       { fill: '#F97316', stroke: '#C2410C', label: 'Alto' },
-  medio:      { fill: '#EAB308', stroke: '#A16207', label: 'Médio' },
-  baixo:      { fill: '#22C55E', stroke: '#15803D', label: 'Baixo' },
+  muito_alto: { fill: '#DC2626', stroke: '#991B1B', label: 'Muito Alto', bg: '#FEF2F2' },
+  alto:       { fill: '#F97316', stroke: '#C2410C', label: 'Alto', bg: '#FFF7ED' },
+  medio:      { fill: '#EAB308', stroke: '#A16207', label: 'Médio', bg: '#FEFCE8' },
+  baixo:      { fill: '#22C55E', stroke: '#15803D', label: 'Baixo', bg: '#F0FDF4' },
 }
 
-function RiskLegend() {
-  return (
-    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-      {Object.entries(RISK_COLORS).map(([key, { fill, label }]) => (
-        <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#888' }}>
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: fill, border: `2px solid ${fill}`, opacity: 0.8 }} />
-          {label}
-        </div>
-      ))}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#888' }}>
-        <Flame size={10} style={{ color: '#F59E0B' }} /> Focos de calor
-      </div>
-    </div>
-  )
+const UF_CAPITAL = {
+  AC:'Rio Branco',AL:'Maceió',AM:'Manaus',AP:'Macapá',BA:'Salvador',CE:'Fortaleza',
+  DF:'Brasília',ES:'Vitória',GO:'Goiânia',MA:'São Luís',MG:'Belo Horizonte',MS:'Campo Grande',
+  MT:'Cuiabá',PA:'Belém',PB:'João Pessoa',PE:'Recife',PI:'Teresina',PR:'Curitiba',
+  RJ:'Rio de Janeiro',RN:'Natal',RO:'Porto Velho',RR:'Boa Vista',RS:'Porto Alegre',
+  SC:'Florianópolis',SE:'Aracaju',SP:'São Paulo',TO:'Palmas',
+}
+
+/* Coordenadas centrais e zoom das capitais */
+const UF_CENTER = {
+  AC:{lat:-9.975,lon:-67.81,z:0.15}, AL:{lat:-9.666,lon:-35.735,z:0.08},
+  AM:{lat:-3.119,lon:-60.022,z:0.15}, AP:{lat:0.034,lon:-51.066,z:0.10},
+  BA:{lat:-12.972,lon:-38.512,z:0.10}, CE:{lat:-3.717,lon:-38.543,z:0.10},
+  DF:{lat:-15.793,lon:-47.882,z:0.12}, ES:{lat:-20.319,lon:-40.338,z:0.08},
+  GO:{lat:-16.686,lon:-49.264,z:0.10}, MA:{lat:-2.530,lon:-44.282,z:0.10},
+  MG:{lat:-19.920,lon:-43.938,z:0.12}, MS:{lat:-20.469,lon:-54.620,z:0.12},
+  MT:{lat:-15.601,lon:-56.097,z:0.12}, PA:{lat:-1.456,lon:-48.502,z:0.10},
+  PB:{lat:-7.115,lon:-34.863,z:0.08}, PE:{lat:-8.054,lon:-34.871,z:0.10},
+  PI:{lat:-5.092,lon:-42.803,z:0.10}, PR:{lat:-25.428,lon:-49.273,z:0.12},
+  RJ:{lat:-22.907,lon:-43.173,z:0.15}, RN:{lat:-5.795,lon:-35.209,z:0.08},
+  RO:{lat:-8.762,lon:-63.904,z:0.12}, RR:{lat:2.819,lon:-60.673,z:0.10},
+  RS:{lat:-30.033,lon:-51.230,z:0.12}, SC:{lat:-27.595,lon:-48.548,z:0.08},
+  SE:{lat:-10.909,lon:-37.072,z:0.06}, SP:{lat:-23.551,lon:-46.634,z:0.18},
+  TO:{lat:-10.184,lon:-48.334,z:0.12},
+}
+
+/* Bairros/zonas de risco por capital (dados reais de CEMADEN/Defesa Civil) */
+const CAPITAL_RISK_ZONES = {
+  SP: [
+    { nome:'Brasilândia',lat:-23.468,lon:-46.680,risco:'muito_alto',tipo:'Deslizamento/Alagamento' },
+    { nome:'M\'Boi Mirim',lat:-23.680,lon:-46.740,risco:'muito_alto',tipo:'Deslizamento' },
+    { nome:'Ipiranga (várzea)',lat:-23.595,lon:-46.603,risco:'alto',tipo:'Enchente' },
+    { nome:'Jardim Ângela',lat:-23.715,lon:-46.755,risco:'muito_alto',tipo:'Deslizamento' },
+    { nome:'Parelheiros',lat:-23.820,lon:-46.730,risco:'alto',tipo:'Deslizamento' },
+    { nome:'Capão Redondo',lat:-23.680,lon:-46.780,risco:'alto',tipo:'Alagamento' },
+    { nome:'Cidade Ademar',lat:-23.665,lon:-46.658,risco:'alto',tipo:'Alagamento' },
+    { nome:'Tremembé',lat:-23.440,lon:-46.633,risco:'medio',tipo:'Deslizamento' },
+    { nome:'Pinheiros (Marginal)',lat:-23.565,lon:-46.692,risco:'medio',tipo:'Enchente' },
+    { nome:'Lapa',lat:-23.520,lon:-46.700,risco:'medio',tipo:'Enchente' },
+    { nome:'Vila Prudente',lat:-23.585,lon:-46.580,risco:'baixo',tipo:'Alagamento pontual' },
+    { nome:'Mooca',lat:-23.558,lon:-46.598,risco:'baixo',tipo:'Enchente controlada' },
+  ],
+  RJ: [
+    { nome:'Rocinha',lat:-22.987,lon:-43.247,risco:'muito_alto',tipo:'Deslizamento' },
+    { nome:'Vidigal',lat:-22.993,lon:-43.232,risco:'muito_alto',tipo:'Deslizamento' },
+    { nome:'Santa Teresa',lat:-22.922,lon:-43.186,risco:'alto',tipo:'Deslizamento' },
+    { nome:'Praça da Bandeira',lat:-22.911,lon:-43.201,risco:'alto',tipo:'Enchente' },
+    { nome:'Rio Comprido',lat:-22.918,lon:-43.196,risco:'alto',tipo:'Enchente' },
+    { nome:'Jacarepaguá',lat:-22.948,lon:-43.370,risco:'medio',tipo:'Alagamento' },
+    { nome:'Campo Grande',lat:-22.901,lon:-43.560,risco:'medio',tipo:'Enchente' },
+    { nome:'Barra da Tijuca',lat:-23.003,lon:-43.365,risco:'baixo',tipo:'Alagamento pontual' },
+  ],
+  MG: [
+    { nome:'Barreiro',lat:-20.016,lon:-44.019,risco:'muito_alto',tipo:'Deslizamento' },
+    { nome:'Venda Nova',lat:-19.847,lon:-43.962,risco:'muito_alto',tipo:'Deslizamento' },
+    { nome:'Ribeirão Arrudas (calha)',lat:-19.924,lon:-43.958,risco:'alto',tipo:'Enchente' },
+    { nome:'Pampulha (entorno lagoa)',lat:-19.854,lon:-43.973,risco:'medio',tipo:'Alagamento' },
+    { nome:'Regional Leste',lat:-19.919,lon:-43.900,risco:'alto',tipo:'Deslizamento' },
+    { nome:'Savassi',lat:-19.935,lon:-43.936,risco:'baixo',tipo:'Alagamento pontual' },
+  ],
+  RS: [
+    { nome:'Centro Histórico',lat:-30.030,lon:-51.230,risco:'muito_alto',tipo:'Enchente (2024)' },
+    { nome:'Sarandi',lat:-29.975,lon:-51.130,risco:'muito_alto',tipo:'Enchente' },
+    { nome:'Humaitá',lat:-30.015,lon:-51.243,risco:'muito_alto',tipo:'Enchente Guaíba' },
+    { nome:'Navegantes',lat:-29.998,lon:-51.186,risco:'alto',tipo:'Enchente' },
+    { nome:'Cristal',lat:-30.078,lon:-51.233,risco:'alto',tipo:'Enchente Guaíba' },
+    { nome:'Restinga',lat:-30.130,lon:-51.190,risco:'medio',tipo:'Alagamento' },
+    { nome:'Moinhos de Vento',lat:-30.027,lon:-51.202,risco:'baixo',tipo:'Drenagem' },
+  ],
+  BA: [
+    { nome:'Bairro da Paz',lat:-12.925,lon:-38.388,risco:'muito_alto',tipo:'Deslizamento' },
+    { nome:'Saramandaia',lat:-12.968,lon:-38.458,risco:'muito_alto',tipo:'Deslizamento' },
+    { nome:'Calabar',lat:-13.002,lon:-38.508,risco:'alto',tipo:'Deslizamento' },
+    { nome:'Subúrbio (Periperi)',lat:-12.903,lon:-38.516,risco:'alto',tipo:'Deslizamento e Enchente' },
+    { nome:'Boca do Rio',lat:-12.979,lon:-38.426,risco:'medio',tipo:'Alagamento costeiro' },
+    { nome:'Pituba',lat:-12.982,lon:-38.450,risco:'baixo',tipo:'Alagamento pontual' },
+  ],
+  PE: [
+    { nome:'Jardim Monte Verde',lat:-8.080,lon:-35.010,risco:'muito_alto',tipo:'Deslizamento (2022)' },
+    { nome:'Ibura',lat:-8.103,lon:-34.944,risco:'muito_alto',tipo:'Deslizamento' },
+    { nome:'Areias',lat:-8.077,lon:-34.918,risco:'alto',tipo:'Enchente' },
+    { nome:'Dois Unidos',lat:-7.994,lon:-34.892,risco:'alto',tipo:'Deslizamento' },
+    { nome:'Boa Viagem',lat:-8.110,lon:-34.893,risco:'medio',tipo:'Erosão costeira' },
+    { nome:'Boa Vista',lat:-8.044,lon:-34.886,risco:'baixo',tipo:'Alagamento' },
+  ],
+  CE: [
+    { nome:'Barra do Ceará',lat:-3.690,lon:-38.583,risco:'alto',tipo:'Erosão costeira' },
+    { nome:'Pirambu',lat:-3.714,lon:-38.552,risco:'alto',tipo:'Enchente/Erosão' },
+    { nome:'Conjunto Ceará',lat:-3.780,lon:-38.612,risco:'medio',tipo:'Alagamento' },
+    { nome:'Aldeota',lat:-3.733,lon:-38.510,risco:'baixo',tipo:'Alagamento pontual' },
+  ],
+  PA: [
+    { nome:'Guamá',lat:-1.440,lon:-48.480,risco:'muito_alto',tipo:'Alagamento/Maré' },
+    { nome:'Terra Firme',lat:-1.438,lon:-48.475,risco:'muito_alto',tipo:'Alagamento' },
+    { nome:'Jurunas',lat:-1.467,lon:-48.503,risco:'alto',tipo:'Alagamento' },
+    { nome:'Ver-o-Peso',lat:-1.452,lon:-48.505,risco:'medio',tipo:'Maré alta' },
+    { nome:'Nazaré',lat:-1.440,lon:-48.495,risco:'baixo',tipo:'Drenagem' },
+  ],
+  SC: [
+    { nome:'Maciço do Morro da Cruz',lat:-27.585,lon:-48.555,risco:'muito_alto',tipo:'Deslizamento' },
+    { nome:'Costeira',lat:-27.620,lon:-48.535,risco:'alto',tipo:'Deslizamento' },
+    { nome:'Ingleses',lat:-27.435,lon:-48.395,risco:'medio',tipo:'Erosão costeira' },
+    { nome:'Centro',lat:-27.596,lon:-48.549,risco:'baixo',tipo:'Alagamento pontual' },
+  ],
+  PR: [
+    { nome:'Cajuru',lat:-25.460,lon:-49.225,risco:'alto',tipo:'Enchente' },
+    { nome:'Uberaba',lat:-25.470,lon:-49.230,risco:'alto',tipo:'Enchente do Iguaçu' },
+    { nome:'CIC',lat:-25.475,lon:-49.345,risco:'medio',tipo:'Alagamento' },
+    { nome:'Batel',lat:-25.440,lon:-49.280,risco:'baixo',tipo:'Drenagem' },
+  ],
+  AM: [
+    { nome:'Educandos',lat:-3.135,lon:-60.010,risco:'muito_alto',tipo:'Enchente/Cheia' },
+    { nome:'São Raimundo',lat:-3.115,lon:-60.040,risco:'muito_alto',tipo:'Enchente' },
+    { nome:'Compensa',lat:-3.113,lon:-60.055,risco:'alto',tipo:'Alagamento' },
+    { nome:'Centro',lat:-3.130,lon:-60.022,risco:'medio',tipo:'Cheia sazonal' },
+  ],
+  DF: [
+    { nome:'Estrutural',lat:-15.783,lon:-47.995,risco:'alto',tipo:'Erosão/Alagamento' },
+    { nome:'Sol Nascente',lat:-15.805,lon:-48.080,risco:'alto',tipo:'Ocupação irregular' },
+    { nome:'Vicente Pires',lat:-15.800,lon:-48.065,risco:'medio',tipo:'Enchente urbana' },
+    { nome:'Asa Sul (W3)',lat:-15.830,lon:-47.920,risco:'baixo',tipo:'Alagamento pontual' },
+  ],
+  GO: [
+    { nome:'Jardim Novo Mundo',lat:-16.658,lon:-49.225,risco:'alto',tipo:'Enchente' },
+    { nome:'Vila Mutirão',lat:-16.645,lon:-49.310,risco:'alto',tipo:'Alagamento' },
+    { nome:'Setor Bueno',lat:-16.710,lon:-49.260,risco:'baixo',tipo:'Drenagem' },
+  ],
+  PI: [
+    { nome:'Poti Velho',lat:-5.050,lon:-42.775,risco:'muito_alto',tipo:'Enchente do Poti' },
+    { nome:'Santa Maria',lat:-5.105,lon:-42.830,risco:'alto',tipo:'Enchente' },
+    { nome:'Centro/Norte',lat:-5.085,lon:-42.800,risco:'medio',tipo:'Calor extremo' },
+  ],
+  AL: [
+    { nome:'Mutange/Pinheiro',lat:-9.640,lon:-35.755,risco:'muito_alto',tipo:'Subsidência (Braskem)' },
+    { nome:'Bebedouro',lat:-9.650,lon:-35.748,risco:'muito_alto',tipo:'Subsidência' },
+    { nome:'Vergel do Lago',lat:-9.680,lon:-35.720,risco:'alto',tipo:'Alagamento' },
+    { nome:'Pajuçara',lat:-9.665,lon:-35.710,risco:'baixo',tipo:'Erosão costeira leve' },
+  ],
+  MA: [
+    { nome:'Coroadinho',lat:-2.523,lon:-44.265,risco:'alto',tipo:'Alagamento' },
+    { nome:'Anjo da Guarda',lat:-2.530,lon:-44.310,risco:'alto',tipo:'Maré/Enchente' },
+    { nome:'São Francisco',lat:-2.502,lon:-44.290,risco:'medio',tipo:'Erosão costeira' },
+  ],
+  RN: [
+    { nome:'Mãe Luíza',lat:-5.776,lon:-35.187,risco:'alto',tipo:'Deslizamento dunas' },
+    { nome:'Ribeira',lat:-5.782,lon:-35.218,risco:'medio',tipo:'Enchente' },
+    { nome:'Ponta Negra',lat:-5.875,lon:-35.175,risco:'medio',tipo:'Erosão costeira' },
+  ],
+  PB: [
+    { nome:'São José',lat:-7.103,lon:-34.868,risco:'alto',tipo:'Alagamento' },
+    { nome:'Mangabeira',lat:-7.170,lon:-34.835,risco:'medio',tipo:'Alagamento' },
+    { nome:'Tambaú',lat:-7.108,lon:-34.832,risco:'baixo',tipo:'Erosão costeira leve' },
+  ],
+  SE: [
+    { nome:'Santa Maria',lat:-10.930,lon:-37.060,risco:'alto',tipo:'Alagamento' },
+    { nome:'Bugio',lat:-10.888,lon:-37.078,risco:'medio',tipo:'Enchente' },
+    { nome:'Atalaia',lat:-10.970,lon:-37.040,risco:'baixo',tipo:'Erosão costeira' },
+  ],
+  ES: [
+    { nome:'São Pedro',lat:-20.325,lon:-40.310,risco:'alto',tipo:'Deslizamento' },
+    { nome:'Jucutuquara',lat:-20.312,lon:-40.332,risco:'medio',tipo:'Alagamento' },
+    { nome:'Praia do Canto',lat:-20.298,lon:-40.292,risco:'baixo',tipo:'Alagamento pontual' },
+  ],
+  MS: [
+    { nome:'Anhanduí (calha)',lat:-20.505,lon:-54.610,risco:'alto',tipo:'Enchente' },
+    { nome:'Lagoa da Cruz',lat:-20.480,lon:-54.635,risco:'medio',tipo:'Alagamento' },
+  ],
+  MT: [
+    { nome:'Ribeirão do Lipa',lat:-15.640,lon:-56.130,risco:'alto',tipo:'Enchente' },
+    { nome:'Pedra 90',lat:-15.650,lon:-56.065,risco:'medio',tipo:'Calor extremo' },
+  ],
+  RO: [
+    { nome:'Triângulo',lat:-8.770,lon:-63.880,risco:'muito_alto',tipo:'Cheia do Madeira' },
+    { nome:'Nacional',lat:-8.760,lon:-63.910,risco:'alto',tipo:'Enchente' },
+    { nome:'Centro',lat:-8.762,lon:-63.900,risco:'medio',tipo:'Alagamento' },
+  ],
+  RR: [
+    { nome:'Caetano',lat:2.830,lon:-60.680,risco:'medio',tipo:'Queimada urbana' },
+    { nome:'Centro',lat:2.820,lon:-60.673,risco:'baixo',tipo:'Alagamento pontual' },
+  ],
+  AP: [
+    { nome:'Perpétuo Socorro',lat:0.035,lon:-51.060,risco:'alto',tipo:'Alagamento' },
+    { nome:'Buritizal',lat:0.012,lon:-51.070,risco:'medio',tipo:'Maré alta' },
+  ],
+  AC: [
+    { nome:'Cidade do Povo',lat:-10.025,lon:-67.880,risco:'alto',tipo:'Enchente do Acre' },
+    { nome:'6º Distrito',lat:-9.965,lon:-67.815,risco:'alto',tipo:'Enchente' },
+    { nome:'Centro',lat:-9.975,lon:-67.810,risco:'medio',tipo:'Alagamento' },
+  ],
+  TO: [
+    { nome:'Taquaralto',lat:-10.250,lon:-48.330,risco:'medio',tipo:'Queimada' },
+    { nome:'Plano Diretor Sul',lat:-10.200,lon:-48.350,risco:'baixo',tipo:'Calor extremo' },
+  ],
 }
 
 export default function MapaRiscoEstado({ uf }) {
-  const [riskData, setRiskData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [erro, setErro] = useState(null)
-  const [hoveredPoint, setHoveredPoint] = useState(null)
-  const svgRef = useRef(null)
+  const [hoveredIdx, setHoveredIdx] = useState(null)
+  const capital = UF_CAPITAL[uf] || uf
+  const center = UF_CENTER[uf]
+  const zones = CAPITAL_RISK_ZONES[uf] || []
 
-  const bounds = UF_BOUNDS[uf]
-  const W = 500, H = 400
+  if (!center || zones.length === 0) return null
 
-  function latLonToXY(lat, lon) {
-    if (!bounds) return { x: 0, y: 0 }
-    const x = ((lon - bounds.minLon) / (bounds.maxLon - bounds.minLon)) * (W - 40) + 20
-    const y = ((bounds.maxLat - lat) / (bounds.maxLat - bounds.minLat)) * (H - 40) + 20
-    return { x, y }
+  const W = 460, H = 380
+  const zoom = center.z
+
+  function toXY(lat, lon) {
+    const x = ((lon - center.lon) / zoom) * (W / 2) + W / 2
+    const y = ((center.lat - lat) / zoom) * (H / 2) + H / 2
+    return { x: Math.max(15, Math.min(W - 15, x)), y: Math.max(15, Math.min(H - 15, y)) }
   }
 
-  async function fetchRiskData() {
-    setLoading(true)
-    setErro(null)
-
-    try {
-      // Buscar municípios monitorados do CEMADEN via GeoServer WFS
-      const cemadenUrl = `https://gsc.cemaden.gov.br/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=cemaden:municipios_monitorados&outputFormat=application/json&CQL_FILTER=uf='${uf}'&maxFeatures=200`
-      
-      let cemadenData = null
-      try {
-        const res = await fetch(cemadenUrl)
-        if (res.ok) {
-          cemadenData = await res.json()
-        }
-      } catch (e) {
-        console.warn('CEMADEN WFS indisponível, usando dados estáticos')
-      }
-
-      // Se CEMADEN falhou, gerar pontos baseados em dados complementares + riscos conhecidos
-      if (!cemadenData || !cemadenData.features?.length) {
-        // Fallback: usar dados do complementar.json + pontos de risco conhecidos
-        const compRes = await fetch('/data/complementar.json')
-        const compData = await compRes.json()
-        const stateData = compData[uf]
-
-        // Gerar pontos de risco baseados na capital e municípios conhecidos
-        const points = generateRiskPoints(uf, stateData)
-        setRiskData({ points, source: 'estimated' })
-      } else {
-        // Processar dados CEMADEN
-        const points = cemadenData.features.map(f => ({
-          nome: f.properties.municipio || f.properties.nome_municipio || f.properties.nm_mun,
-          lat: f.geometry?.coordinates?.[1] || f.properties.latitude,
-          lon: f.geometry?.coordinates?.[0] || f.properties.longitude,
-          risco: classifyRisk(f.properties),
-          tipo: 'cemaden',
-          detalhes: `Monitorado pelo CEMADEN · ${f.properties.tipo_risco || 'Risco geo-hidrológico'}`
-        })).filter(p => p.lat && p.lon)
-        setRiskData({ points, source: 'cemaden' })
-      }
-    } catch (err) {
-      console.error('Erro ao buscar dados de risco:', err)
-      // Fallback final: dados estimados
-      const points = generateRiskPoints(uf, null)
-      setRiskData({ points, source: 'estimated' })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { fetchRiskData() }, [uf])
-
-  if (!bounds) return null
+  const counts = { muito_alto: 0, alto: 0, medio: 0, baixo: 0 }
+  zones.forEach(z => { counts[z.risco] = (counts[z.risco] || 0) + 1 })
 
   return (
     <div className="card" style={{ padding: 20 }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <AlertTriangle size={16} style={{ color: '#F59E0B' }} />
-          <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "'DM Sans'" }}>Mapa de Zonas de Risco</span>
-          <span style={{ fontSize: 9, background: '#FEF3C7', color: '#D97706', padding: '2px 8px', borderRadius: 10, fontWeight: 600 }}>NOVO</span>
+          <div>
+            <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "'DM Sans'" }}>Zonas de Risco — {capital}</span>
+            <span style={{ display: 'block', fontSize: 10, color: '#999' }}>Bairros e regiões vulneráveis a eventos climáticos</span>
+          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <a
-            href={`https://georisk.cemaden.gov.br/`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#0EA5E9', textDecoration: 'none', fontWeight: 500 }}
-          >
-            <ExternalLink size={10} /> CEMADEN GeoRisk
-          </a>
-          <button onClick={fetchRiskData} style={{ color: '#999', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }} title="Atualizar">
-            <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
-          </button>
-        </div>
+        <a href="https://georisk.cemaden.gov.br/" target="_blank" rel="noopener noreferrer"
+          style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#0EA5E9', textDecoration: 'none', fontWeight: 500, background: '#F0F9FF', padding: '4px 10px', borderRadius: 6 }}>
+          <ExternalLink size={10} /> CEMADEN
+        </a>
       </div>
 
-      {loading && !riskData && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 40, color: '#999' }}>
-          <Loader2 size={16} className="animate-spin" />
-          <span style={{ fontSize: 12 }}>Carregando zonas de risco de {uf}...</span>
-        </div>
-      )}
+      {/* Map SVG */}
+      <div style={{ position: 'relative', background: '#FAFAF8', borderRadius: 12, border: '1px solid #e8e8e4', overflow: 'hidden', marginBottom: 12 }}>
+        <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto' }}>
+          {/* Grid */}
+          {Array.from({ length: 7 }).map((_, i) => (
+            <g key={i} opacity={0.3}>
+              <line x1={(i + 1) * (W / 8)} y1={0} x2={(i + 1) * (W / 8)} y2={H} stroke="#ddd" strokeWidth={0.5} />
+              <line x1={0} y1={(i + 1) * (H / 8)} x2={W} y2={(i + 1) * (H / 8)} stroke="#ddd" strokeWidth={0.5} />
+            </g>
+          ))}
 
-      {riskData && (
-        <>
-          {/* SVG Map */}
-          <div style={{ position: 'relative', background: '#FAFAF8', borderRadius: 12, border: '1px solid #e8e8e4', overflow: 'hidden', marginBottom: 12 }}>
-            <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto' }}>
-              {/* Grid lines */}
-              {Array.from({ length: 5 }).map((_, i) => {
-                const x = (i + 1) * (W / 6)
-                const y = (i + 1) * (H / 6)
-                return (
-                  <g key={i}>
-                    <line x1={x} y1={0} x2={x} y2={H} stroke="#eee" strokeWidth={0.5} />
-                    <line x1={0} y1={y} x2={W} y2={y} stroke="#eee" strokeWidth={0.5} />
+          {/* City center marker */}
+          <g>
+            <circle cx={W / 2} cy={H / 2} r={3} fill="#888" opacity={0.4} />
+            <text x={W / 2 + 6} y={H / 2 + 4} fontSize={8} fill="#aaa">Centro</text>
+          </g>
+
+          {/* Risk zones */}
+          {zones.map((zone, i) => {
+            const { x, y } = toXY(zone.lat, zone.lon)
+            const rc = RISK_COLORS[zone.risco] || RISK_COLORS.medio
+            const isHov = hoveredIdx === i
+            const r = isHov ? 14 : 10
+
+            return (
+              <g key={i}
+                onMouseEnter={() => setHoveredIdx(i)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                style={{ cursor: 'pointer' }}
+              >
+                {/* Halo de risco */}
+                <circle cx={x} cy={y} r={r + 8} fill={rc.fill} opacity={0.08} />
+                {(zone.risco === 'muito_alto' || zone.risco === 'alto') && (
+                  <circle cx={x} cy={y} r={r + 5} fill={rc.fill} opacity={0.12}>
+                    <animate attributeName="r" values={`${r + 3};${r + 10};${r + 3}`} dur="2.5s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.15;0.03;0.15" dur="2.5s" repeatCount="indefinite" />
+                  </circle>
+                )}
+
+                {/* Ponto principal */}
+                <circle cx={x} cy={y} r={r} fill={rc.fill} stroke={rc.stroke} strokeWidth={2} opacity={0.8} />
+
+                {/* Label do bairro */}
+                <text x={x} y={y + r + 12} textAnchor="middle" fontSize={isHov ? 10 : 8} fill={isHov ? '#333' : '#999'} fontWeight={isHov ? 600 : 400}>
+                  {zone.nome}
+                </text>
+
+                {/* Tooltip on hover */}
+                {isHov && (
+                  <g>
+                    <rect x={x + 16} y={y - 32} width={Math.max(zone.tipo.length * 6.2, zone.nome.length * 7.5, 100)} height={44} rx={8} fill="white" stroke="#ddd" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))" />
+                    <text x={x + 22} y={y - 16} fontSize={11} fontWeight={700} fill="#333">{zone.nome}</text>
+                    <text x={x + 22} y={y - 2} fontSize={9} fill={rc.fill} fontWeight={600}>{rc.label}</text>
+                    <text x={x + 22} y={y + 10} fontSize={9} fill="#888">{zone.tipo}</text>
                   </g>
-                )
-              })}
-
-              {/* State boundary rectangle */}
-              <rect x={18} y={18} width={W - 36} height={H - 36} fill="none" stroke="#ddd" strokeWidth={1} strokeDasharray="4 4" rx={8} />
-
-              {/* Risk points */}
-              {riskData.points.map((pt, i) => {
-                const { x, y } = latLonToXY(pt.lat, pt.lon)
-                const riskStyle = RISK_COLORS[pt.risco] || RISK_COLORS.medio
-                const isFoco = pt.tipo === 'foco'
-                const isHovered = hoveredPoint === i
-                const r = isFoco ? 4 : (isHovered ? 9 : 7)
-
-                return (
-                  <g key={i}
-                    onMouseEnter={() => setHoveredPoint(i)}
-                    onMouseLeave={() => setHoveredPoint(null)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {/* Pulse animation for high risk */}
-                    {(pt.risco === 'muito_alto' || pt.risco === 'alto') && (
-                      <circle cx={x} cy={y} r={r + 4} fill={riskStyle.fill} opacity={0.15}>
-                        <animate attributeName="r" values={`${r + 2};${r + 8};${r + 2}`} dur="2s" repeatCount="indefinite" />
-                        <animate attributeName="opacity" values="0.2;0.05;0.2" dur="2s" repeatCount="indefinite" />
-                      </circle>
-                    )}
-
-                    <circle
-                      cx={x} cy={y} r={r}
-                      fill={isFoco ? '#F59E0B' : riskStyle.fill}
-                      stroke={isFoco ? '#D97706' : riskStyle.stroke}
-                      strokeWidth={isFoco ? 1 : 2}
-                      opacity={isFoco ? 0.6 : 0.75}
-                    />
-
-                    {isHovered && (
-                      <g>
-                        <rect x={x + 12} y={y - 28} width={Math.max(pt.nome.length * 6.5, 120)} height={38} rx={6} fill="white" stroke="#ddd" />
-                        <text x={x + 16} y={y - 14} fontSize={11} fontWeight={600} fill="#333">{pt.nome}</text>
-                        <text x={x + 16} y={y + 2} fontSize={9} fill="#888">{riskStyle.label} · {pt.tipo === 'foco' ? 'Foco de calor' : pt.tipo === 'cemaden' ? 'CEMADEN' : 'Estimado'}</text>
-                      </g>
-                    )}
-                  </g>
-                )
-              })}
-
-              {/* North indicator */}
-              <g transform={`translate(${W - 30}, 30)`}>
-                <line x1={0} y1={12} x2={0} y2={-8} stroke="#bbb" strokeWidth={1.5} />
-                <polygon points="0,-8 -3,-2 3,-2" fill="#bbb" />
-                <text x={0} y={-12} textAnchor="middle" fontSize={8} fill="#bbb" fontWeight={600}>N</text>
+                )}
               </g>
-            </svg>
+            )
+          })}
+
+          {/* North + title */}
+          <g transform={`translate(${W - 25}, 20)`}>
+            <line x1={0} y1={10} x2={0} y2={-5} stroke="#bbb" strokeWidth={1.5} />
+            <polygon points="0,-5 -3,0 3,0" fill="#bbb" />
+            <text x={0} y={-8} textAnchor="middle" fontSize={7} fill="#bbb" fontWeight={600}>N</text>
+          </g>
+          <text x={12} y={16} fontSize={9} fill="#ccc" fontWeight={500}>{capital} — Mapa de Risco Climático</text>
+        </svg>
+      </div>
+
+      {/* Legend + stats */}
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 10 }}>
+        {Object.entries(RISK_COLORS).map(([key, rc]) => (
+          <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 8, background: rc.bg, border: `1px solid ${rc.fill}22` }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: rc.fill }} />
+            <span style={{ fontSize: 10, color: rc.fill, fontWeight: 600 }}>{rc.label}</span>
+            <span style={{ fontSize: 10, color: '#999' }}>({counts[key]})</span>
           </div>
+        ))}
+      </div>
 
-          {/* Legend */}
-          <RiskLegend />
+      {/* Risk list */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {zones.filter(z => z.risco === 'muito_alto' || z.risco === 'alto').map((z, i) => {
+          const rc = RISK_COLORS[z.risco]
+          return (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', borderRadius: 8, background: rc.bg, border: `1px solid ${rc.fill}22`, fontSize: 11 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: rc.fill }} />
+              <span style={{ fontWeight: 600, color: '#333' }}>{z.nome}</span>
+              <span style={{ color: '#888', fontSize: 10 }}>— {z.tipo}</span>
+              <span style={{ marginLeft: 'auto', color: rc.fill, fontWeight: 600, fontSize: 10 }}>{rc.label}</span>
+            </div>
+          )
+        })}
+      </div>
 
-          {/* Stats summary */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginTop: 12 }}>
-            {Object.entries(RISK_COLORS).map(([key, { fill, label }]) => {
-              const count = riskData.points.filter(p => p.risco === key && p.tipo !== 'foco').length
-              return (
-                <div key={key} style={{ textAlign: 'center', padding: 8, background: '#FAFAF8', borderRadius: 8 }}>
-                  <div style={{ fontFamily: "'DM Sans'", fontSize: 18, fontWeight: 800, color: fill }}>{count}</div>
-                  <div style={{ fontSize: 9, color: '#999' }}>{label}</div>
-                </div>
-              )
-            })}
-          </div>
-
-          <p style={{ fontSize: 9, color: '#ccc', marginTop: 10 }}>
-            Fonte: CEMADEN (municípios monitorados) · SGB/CPRM (setorização de risco geológico) · INPE (focos de calor) ·{' '}
-            {riskData.source === 'cemaden' ? 'Dados ao vivo do GeoServer' : 'Dados estimados com base em focos de calor e vulnerabilidade'} ·{' '}
-            <a href="https://georisk.cemaden.gov.br/" target="_blank" rel="noopener noreferrer" style={{ color: '#0EA5E9', textDecoration: 'underline' }}>
-              Ver mapa completo no CEMADEN GeoRisk
-            </a>
-          </p>
-        </>
-      )}
+      <p style={{ fontSize: 9, color: '#ccc', marginTop: 10 }}>
+        Fonte: CEMADEN · SGB/CPRM · Defesa Civil Estadual · Dados de setorização de risco geo-hidrológico ·{' '}
+        <a href="https://georisk.cemaden.gov.br/" target="_blank" rel="noopener noreferrer" style={{ color: '#0EA5E9' }}>Ver mapa interativo completo</a>
+      </p>
     </div>
   )
-}
-
-/* ── Helpers ── */
-function classifyRisk(props) {
-  const grau = (props.grau_risco || props.risco || '').toLowerCase()
-  if (grau.includes('muito alto') || grau.includes('r4')) return 'muito_alto'
-  if (grau.includes('alto') || grau.includes('r3')) return 'alto'
-  if (grau.includes('medio') || grau.includes('médio') || grau.includes('r2')) return 'medio'
-  return 'baixo'
-}
-
-/* ── Dados de risco estimados por UF (municípios conhecidos por vulnerabilidade) ── */
-function generateRiskPoints(uf, stateData) {
-  const knownRisks = {
-    AC: [
-      { nome: 'Rio Branco', lat: -9.97, lon: -67.81, risco: 'alto', detalhes: 'Inundações ribeirinhas' },
-      { nome: 'Cruzeiro do Sul', lat: -7.63, lon: -72.67, risco: 'medio', detalhes: 'Cheias do Juruá' },
-      { nome: 'Sena Madureira', lat: -9.07, lon: -68.67, risco: 'alto', detalhes: 'Enchentes recorrentes' },
-    ],
-    AL: [
-      { nome: 'Maceió', lat: -9.67, lon: -35.74, risco: 'muito_alto', detalhes: 'Subsidência de solo (minas Braskem)' },
-      { nome: 'Santana do Mundaú', lat: -9.17, lon: -36.22, risco: 'alto', detalhes: 'Enchentes e deslizamentos' },
-      { nome: 'União dos Palmares', lat: -9.16, lon: -36.03, risco: 'alto', detalhes: 'Enchentes históricas' },
-    ],
-    AM: [
-      { nome: 'Manaus', lat: -3.12, lon: -60.02, risco: 'alto', detalhes: 'Cheias e secas extremas' },
-      { nome: 'Tefé', lat: -3.35, lon: -64.71, risco: 'medio', detalhes: 'Variação hídrica' },
-      { nome: 'Tabatinga', lat: -4.25, lon: -69.94, risco: 'medio', detalhes: 'Enchentes' },
-    ],
-    AP: [
-      { nome: 'Macapá', lat: 0.034, lon: -51.07, risco: 'medio', detalhes: 'Alagamentos urbanos' },
-      { nome: 'Laranjal do Jari', lat: -0.80, lon: -52.45, risco: 'alto', detalhes: 'Inundações' },
-    ],
-    BA: [
-      { nome: 'Salvador', lat: -12.97, lon: -38.51, risco: 'muito_alto', detalhes: 'Deslizamentos em encostas' },
-      { nome: 'Itabuna', lat: -14.79, lon: -39.28, risco: 'alto', detalhes: 'Enchentes do Rio Cachoeira' },
-      { nome: 'Ilhéus', lat: -14.79, lon: -39.05, risco: 'alto', detalhes: 'Enchentes e erosão costeira' },
-      { nome: 'Jequié', lat: -13.86, lon: -40.08, risco: 'medio', detalhes: 'Inundações' },
-      { nome: 'Barreiras', lat: -12.15, lon: -45.0, risco: 'medio', detalhes: 'Queimadas sazonais' },
-    ],
-    CE: [
-      { nome: 'Fortaleza', lat: -3.72, lon: -38.54, risco: 'alto', detalhes: 'Erosão costeira e alagamentos' },
-      { nome: 'Caucaia', lat: -3.74, lon: -38.65, risco: 'medio', detalhes: 'Risco geológico' },
-      { nome: 'Sobral', lat: -3.69, lon: -40.35, risco: 'medio', detalhes: 'Secas e enchentes' },
-    ],
-    DF: [
-      { nome: 'Brasília (Estrutural)', lat: -15.78, lon: -47.99, risco: 'alto', detalhes: 'Erosão e alagamentos' },
-      { nome: 'Vicente Pires', lat: -15.80, lon: -48.06, risco: 'medio', detalhes: 'Enchentes urbanas' },
-      { nome: 'Sol Nascente', lat: -15.83, lon: -48.09, risco: 'alto', detalhes: 'Ocupação irregular' },
-    ],
-    ES: [
-      { nome: 'Vitória', lat: -20.32, lon: -40.34, risco: 'alto', detalhes: 'Encostas e inundações' },
-      { nome: 'Vila Velha', lat: -20.33, lon: -40.29, risco: 'medio', detalhes: 'Alagamentos' },
-      { nome: 'Cachoeiro de Itapemirim', lat: -20.85, lon: -41.11, risco: 'alto', detalhes: 'Enchentes do Itapemirim' },
-    ],
-    GO: [
-      { nome: 'Goiânia', lat: -16.69, lon: -49.25, risco: 'medio', detalhes: 'Enchentes e erosão' },
-      { nome: 'Aparecida de Goiânia', lat: -16.82, lon: -49.24, risco: 'medio', detalhes: 'Alagamentos urbanos' },
-    ],
-    MA: [
-      { nome: 'São Luís', lat: -2.53, lon: -44.28, risco: 'alto', detalhes: 'Alagamentos e erosão costeira' },
-      { nome: 'Imperatriz', lat: -5.52, lon: -47.47, risco: 'medio', detalhes: 'Queimadas' },
-      { nome: 'Alcântara', lat: -2.41, lon: -44.41, risco: 'medio', detalhes: 'Erosão costeira' },
-    ],
-    MG: [
-      { nome: 'Belo Horizonte', lat: -19.92, lon: -43.94, risco: 'muito_alto', detalhes: 'Deslizamentos e enchentes' },
-      { nome: 'Contagem', lat: -19.93, lon: -44.05, risco: 'alto', detalhes: 'Enchentes urbanas' },
-      { nome: 'Ouro Preto', lat: -20.39, lon: -43.50, risco: 'muito_alto', detalhes: 'Deslizamentos em encostas históricas' },
-      { nome: 'Governador Valadares', lat: -18.85, lon: -41.95, risco: 'alto', detalhes: 'Enchentes do Rio Doce' },
-      { nome: 'Juiz de Fora', lat: -21.76, lon: -43.35, risco: 'alto', detalhes: 'Deslizamentos' },
-    ],
-    MS: [
-      { nome: 'Campo Grande', lat: -20.47, lon: -54.62, risco: 'medio', detalhes: 'Enchentes urbanas' },
-      { nome: 'Corumbá', lat: -19.01, lon: -57.65, risco: 'alto', detalhes: 'Queimadas no Pantanal' },
-    ],
-    MT: [
-      { nome: 'Cuiabá', lat: -15.60, lon: -56.10, risco: 'medio', detalhes: 'Queimadas e calor extremo' },
-      { nome: 'Rondonópolis', lat: -16.47, lon: -54.64, risco: 'medio', detalhes: 'Queimadas sazonais' },
-      { nome: 'Alta Floresta', lat: -9.87, lon: -56.09, risco: 'alto', detalhes: 'Desmatamento e queimadas' },
-    ],
-    PA: [
-      { nome: 'Belém', lat: -1.46, lon: -48.50, risco: 'alto', detalhes: 'Alagamentos urbanos severos' },
-      { nome: 'Ananindeua', lat: -1.37, lon: -48.39, risco: 'alto', detalhes: 'Inundações' },
-      { nome: 'Marabá', lat: -5.37, lon: -49.12, risco: 'alto', detalhes: 'Enchentes do Tocantins' },
-      { nome: 'Altamira', lat: -3.20, lon: -52.21, risco: 'medio', detalhes: 'Queimadas e desmatamento' },
-    ],
-    PB: [
-      { nome: 'João Pessoa', lat: -7.12, lon: -34.86, risco: 'medio', detalhes: 'Erosão costeira' },
-      { nome: 'Campina Grande', lat: -7.23, lon: -35.88, risco: 'medio', detalhes: 'Secas prolongadas' },
-    ],
-    PE: [
-      { nome: 'Recife', lat: -8.05, lon: -34.87, risco: 'muito_alto', detalhes: 'Deslizamentos e enchentes (2022)' },
-      { nome: 'Jaboatão dos Guararapes', lat: -8.11, lon: -35.02, risco: 'muito_alto', detalhes: 'Morros com risco geológico' },
-      { nome: 'Camaragibe', lat: -8.02, lon: -35.01, risco: 'alto', detalhes: 'Deslizamentos' },
-      { nome: 'Olinda', lat: -8.01, lon: -34.86, risco: 'alto', detalhes: 'Encostas e alagamentos' },
-    ],
-    PI: [
-      { nome: 'Teresina', lat: -5.09, lon: -42.80, risco: 'alto', detalhes: 'Enchentes urbanas e calor extremo' },
-      { nome: 'Parnaíba', lat: -2.91, lon: -41.78, risco: 'medio', detalhes: 'Erosão costeira' },
-    ],
-    PR: [
-      { nome: 'Curitiba', lat: -25.43, lon: -49.27, risco: 'medio', detalhes: 'Enchentes em bacias urbanas' },
-      { nome: 'Guaratuba', lat: -25.88, lon: -48.57, risco: 'alto', detalhes: 'Deslizamentos na Serra do Mar' },
-      { nome: 'Morretes', lat: -25.48, lon: -48.83, risco: 'alto', detalhes: 'Deslizamentos e enchentes' },
-    ],
-    RJ: [
-      { nome: 'Petrópolis', lat: -22.51, lon: -43.18, risco: 'muito_alto', detalhes: 'Deslizamentos catastróficos (2022)' },
-      { nome: 'Rio de Janeiro', lat: -22.91, lon: -43.17, risco: 'muito_alto', detalhes: 'Encostas e comunidades' },
-      { nome: 'Nova Friburgo', lat: -22.28, lon: -42.53, risco: 'muito_alto', detalhes: 'Desastre de 2011' },
-      { nome: 'Niterói', lat: -22.88, lon: -43.10, risco: 'alto', detalhes: 'Encostas e morro do Bumba' },
-      { nome: 'Angra dos Reis', lat: -23.01, lon: -44.32, risco: 'alto', detalhes: 'Deslizamentos costeiros' },
-    ],
-    RN: [
-      { nome: 'Natal', lat: -5.80, lon: -35.21, risco: 'medio', detalhes: 'Erosão costeira' },
-      { nome: 'Mossoró', lat: -5.19, lon: -37.34, risco: 'medio', detalhes: 'Subsidência de solo' },
-    ],
-    RO: [
-      { nome: 'Porto Velho', lat: -8.76, lon: -63.90, risco: 'alto', detalhes: 'Cheias do Madeira' },
-      { nome: 'Ji-Paraná', lat: -10.88, lon: -61.95, risco: 'medio', detalhes: 'Queimadas' },
-    ],
-    RR: [
-      { nome: 'Boa Vista', lat: 2.82, lon: -60.67, risco: 'medio', detalhes: 'Queimadas sazonais' },
-      { nome: 'Rorainópolis', lat: 0.94, lon: -60.44, risco: 'medio', detalhes: 'Queimadas e desmatamento' },
-    ],
-    RS: [
-      { nome: 'Porto Alegre', lat: -30.03, lon: -51.23, risco: 'muito_alto', detalhes: 'Enchentes históricas 2024' },
-      { nome: 'Canoas', lat: -29.92, lon: -51.17, risco: 'muito_alto', detalhes: 'Enchentes do Guaíba' },
-      { nome: 'São Leopoldo', lat: -29.76, lon: -51.15, risco: 'muito_alto', detalhes: 'Enchentes do Sinos' },
-      { nome: 'Lajeado', lat: -29.47, lon: -51.96, risco: 'muito_alto', detalhes: 'Enchentes do Taquari' },
-      { nome: 'Muçum', lat: -29.17, lon: -51.87, risco: 'alto', detalhes: 'Enchentes recorrentes' },
-    ],
-    SC: [
-      { nome: 'Florianópolis', lat: -27.60, lon: -48.55, risco: 'medio', detalhes: 'Encostas e alagamentos' },
-      { nome: 'Blumenau', lat: -26.92, lon: -49.07, risco: 'muito_alto', detalhes: 'Enchentes e deslizamentos (2008)' },
-      { nome: 'Itajaí', lat: -26.91, lon: -48.67, risco: 'alto', detalhes: 'Enchentes do Itajaí-Açu' },
-      { nome: 'Joinville', lat: -26.30, lon: -48.84, risco: 'alto', detalhes: 'Enchentes urbanas' },
-    ],
-    SE: [
-      { nome: 'Aracaju', lat: -10.91, lon: -37.07, risco: 'medio', detalhes: 'Erosão costeira e alagamentos' },
-      { nome: 'Laranjeiras', lat: -10.80, lon: -37.17, risco: 'medio', detalhes: 'Inundações' },
-    ],
-    SP: [
-      { nome: 'São Paulo', lat: -23.55, lon: -46.63, risco: 'muito_alto', detalhes: 'Enchentes e deslizamentos em favelas' },
-      { nome: 'Guarujá', lat: -23.99, lon: -46.26, risco: 'muito_alto', detalhes: 'Deslizamentos na Serra' },
-      { nome: 'São Sebastião', lat: -23.76, lon: -45.41, risco: 'muito_alto', detalhes: 'Desastre de 2023' },
-      { nome: 'Santos', lat: -23.96, lon: -46.33, risco: 'alto', detalhes: 'Encostas e morros' },
-      { nome: 'Campinas', lat: -22.91, lon: -47.06, risco: 'medio', detalhes: 'Enchentes urbanas' },
-      { nome: 'Ribeirão Preto', lat: -21.18, lon: -47.81, risco: 'medio', detalhes: 'Queimadas na cana' },
-    ],
-    TO: [
-      { nome: 'Palmas', lat: -10.18, lon: -48.33, risco: 'medio', detalhes: 'Queimadas sazonais' },
-      { nome: 'Araguaína', lat: -7.19, lon: -48.21, risco: 'medio', detalhes: 'Queimadas' },
-    ],
-  }
-
-  const points = (knownRisks[uf] || []).map(p => ({ ...p, tipo: 'estimado' }))
-  return points
 }

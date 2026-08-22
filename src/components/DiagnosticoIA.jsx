@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Sparkles, Loader2, RefreshCw } from 'lucide-react'
 import { PILARES, getEscala } from '../data/constants'
 
@@ -13,51 +13,47 @@ function buildPrompt(ente, top3) {
       const escala = getEscala(media)
       return `${comp.label}: ${escala.label} (${Math.round(media * 100)}%)`
     }).join('; ')
-    return `**${pilar.label}** (score ${ente.scores[pilarKey]}/100): ${comps}`
+    return `**${pilar.label}** (nota ${ente.scores[pilarKey]}/100): ${comps}`
   }).join('\n')
 
   const top3Resumo = top3.map(e =>
-    `${e.nome} (${e.uf}): Farol=${e.scores.farol}, Gov=${e.scores.governanca}, Pol=${e.scores.politicas}, Fin=${e.scores.financas}`
-  ).join('\n')
+    `${e.nome} (${e.uf}): Nota geral=${e.scores.farol}`
+  ).join(', ')
 
-  return `Você é um comunicador público que traduz dados técnicos para a população geral. Analise os dados do Painel ClimaBrasil para ${ente.nome} (${ente.uf}) e gere um diagnóstico que qualquer cidadão entenda, mesmo sem conhecimento técnico sobre clima.
+  return `Você é um comunicador público que explica questões climáticas de forma simples e direta para cidadãos brasileiros comuns. Analise os dados abaixo sobre ${ente.nome} (${ente.uf}) e gere um diagnóstico que QUALQUER PESSOA consiga entender, mesmo sem conhecimento técnico.
 
-REGRAS DE LINGUAGEM:
-- Use linguagem simples e direta, como se estivesse explicando para um vizinho
-- Evite termos técnicos. Se precisar usar algum, explique entre parênteses
-- Use exemplos concretos do dia a dia quando possível
-- Em vez de "governança climática", diga "preparo do estado para enfrentar problemas do clima"
-- Em vez de "mitigação", diga "redução da poluição que esquenta o planeta"
-- Em vez de "adaptação", diga "preparo para lidar com secas, enchentes e calor extremo"
-- Fale sobre impactos que as pessoas sentem: água, energia, saúde, transporte, comida
-
-DADOS DO ENTE:
-Score Farol: ${ente.scores.farol}/100
+DADOS:
+Nota geral: ${ente.scores.farol}/100
 ${resumo}
 
-TOP 3 ESTADOS MAIS PREPARADOS (referência):
-${top3Resumo}
+Melhores do Brasil: ${top3Resumo}
+
+REGRAS DE LINGUAGEM:
+- Use frases curtas e palavras do dia a dia
+- Evite COMPLETAMENTE termos técnicos como "mitigação", "adaptação", "resiliência", "governança", "inventário de emissões". Quando precisar falar desses conceitos, use explicações simples como: "plano para reduzir a poluição", "preparação para enchentes e secas", "capacidade de se recuperar de desastres", "organização do governo", "contagem de quanto polui"
+- Use exemplos concretos: enchentes, calor forte, falta d'água, deslizamentos, queimadas
+- Fale como se estivesse explicando para um vizinho ou familiar
+- Use emojis moderadamente para tornar visual
 
 Gere EXATAMENTE neste formato:
 
 ## Como está ${ente.nome}?
-[2-3 frases simples explicando se o estado está bem ou mal preparado para problemas do clima como secas, enchentes e calor extremo. Use nota de escola como analogia se ajudar.]
+[2-3 frases simples explicando se o estado/cidade está bem preparado ou não para problemas do clima como enchentes, calor extremo, secas. Use comparações: "está entre os melhores", "está ficando para trás", "precisa melhorar muito"]
 
-## O que está faltando?
-- [Problema 1 que afeta a vida das pessoas - o mais urgente]
-- [Problema 2]
-- [Problema 3]
+## O que preocupa?
+- 🔴 [Problema 1 - explique de forma que um cidadão entenda o impacto no dia a dia]
+- 🟡 [Problema 2]
+- 🟡 [Problema 3]
 
 ## O que pode ser feito?
-- [Ação 1 - concreta e compreensível, mencionando estados que já fizeram isso]
-- [Ação 2]
-- [Ação 3]
+- ✅ [Ação 1 - concreta e compreensível, ex: "Criar um plano de emergência para quando chover muito forte"]
+- ✅ [Ação 2 - cite exemplos de outros estados que já fizeram isso]
+- ✅ [Ação 3]
 
-## O que você pode fazer como cidadão?
-- [Ação cidadã 1 - algo que a pessoa pode fazer para cobrar ou contribuir]
-- [Ação cidadã 2]
+## Você sabia?
+[1 frase com um dado ou comparação surpreendente para engajar o cidadão]
 
-Máximo 300 palavras. Tom respeitoso mas direto.`
+Máximo 280 palavras. Linguagem coloquial mas respeitosa.`
 }
 
 export default function DiagnosticoIA({ ente, todos }) {
@@ -76,11 +72,7 @@ export default function DiagnosticoIA({ ente, todos }) {
 
     try {
       const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
-      if (!API_KEY) {
-        setErro('Chave da API Gemini não configurada (VITE_GEMINI_API_KEY)')
-        setLoading(false)
-        return
-      }
+      if (!API_KEY) { setErro('Chave da API Gemini não configurada'); setLoading(false); return }
 
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${API_KEY}`,
@@ -105,42 +97,61 @@ export default function DiagnosticoIA({ ente, todos }) {
     }
   }
 
-  // Auto-gerar ao montar
-  useEffect(() => { gerar() }, [ente.uf])
-
   return (
-    <div className="card" style={{ padding: '24px 28px', borderLeft: '4px solid #0F766E' }}>
+    <div className="card" style={{ padding: 24, border: '2px solid #F59E0B33', background: 'linear-gradient(135deg, #FFFBEB 0%, white 30%)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Sparkles size={18} style={{ color: '#F59E0B' }} />
-          <h3 style={{ fontFamily: "'DM Sans'", fontSize: 16, fontWeight: 700 }}>
-            O que está acontecendo em {ente.nome}?
-          </h3>
+          <Sparkles size={20} style={{ color: '#F59E0B' }} />
+          <div>
+            <span style={{ fontSize: 15, fontWeight: 800, fontFamily: "'DM Sans'", color: '#1a1a1a' }}>
+              Diagnóstico para o Cidadão
+            </span>
+            <span style={{ display: 'block', fontSize: 10, color: '#999' }}>
+              Análise inteligente em linguagem acessível
+            </span>
+          </div>
         </div>
+        {!diagnostico && !loading && (
+          <button
+            onClick={gerar}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '10px 20px', borderRadius: 10,
+              background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+              color: 'white', border: 'none', cursor: 'pointer',
+              fontSize: 13, fontWeight: 700, boxShadow: '0 4px 12px rgba(245,158,11,0.3)',
+              transition: 'transform 0.15s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <Sparkles size={15} />
+            Gerar diagnóstico
+          </button>
+        )}
         {diagnostico && (
-          <button onClick={gerar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11 }}>
+          <button onClick={gerar} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#D97706', background: '#FEF3C7', border: 'none', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontWeight: 500 }}>
             <RefreshCw size={12} /> Atualizar
           </button>
         )}
       </div>
 
-      <p style={{ fontSize: 12, color: '#999', marginBottom: 16 }}>
-        Análise gerada por inteligência artificial a partir dos dados oficiais do Painel ClimaBrasil. Linguagem simplificada para todos os públicos.
-      </p>
+      {!diagnostico && !loading && !erro && (
+        <p style={{ fontSize: 13, color: '#999', textAlign: 'center', padding: '12px 0' }}>
+          Clique em "Gerar diagnóstico" para receber uma análise clara sobre a situação climática de {ente.nome} em linguagem simples.
+        </p>
+      )}
 
       {loading && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '32px 0', color: '#999' }}>
-          <Loader2 size={18} className="animate-spin" />
-          <span style={{ fontSize: 13 }}>Analisando dados de {ente.nome}...</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', padding: 24, color: '#D97706' }}>
+          <Loader2 size={20} className="animate-spin" />
+          <span style={{ fontSize: 13 }}>Preparando diagnóstico de {ente.nome} para você...</span>
         </div>
       )}
 
       {erro && (
-        <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 10, padding: 14, fontSize: 13, color: '#DC2626' }}>
+        <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 10, padding: 12, fontSize: 12, color: '#DC2626' }}>
           {erro}
-          <button onClick={gerar} style={{ display: 'block', marginTop: 8, fontSize: 12, color: '#0F766E', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
-            Tentar novamente
-          </button>
         </div>
       )}
 
@@ -148,13 +159,13 @@ export default function DiagnosticoIA({ ente, todos }) {
         <div>
           {diagnostico.split('\n').map((line, i) => {
             if (line.startsWith('## ')) {
-              return <h4 key={i} style={{ fontFamily: "'DM Sans'", fontSize: 15, fontWeight: 700, color: '#1a1a1a', marginTop: i > 0 ? 20 : 0, marginBottom: 8 }}>{line.replace('## ', '')}</h4>
+              return <h4 key={i} style={{ color: '#1a1a1a', fontWeight: 700, marginTop: 16, marginBottom: 8, fontSize: 14, fontFamily: "'DM Sans'" }}>{line.replace('## ', '')}</h4>
             }
             if (line.startsWith('- ')) {
-              return <p key={i} style={{ fontSize: 14, color: '#555', marginLeft: 12, marginBottom: 6, lineHeight: 1.6, paddingLeft: 8, borderLeft: '2px solid #e8e8e4' }}>{line.replace('- ', '')}</p>
+              return <p key={i} style={{ color: '#555', marginLeft: 8, marginBottom: 4, fontSize: 13, lineHeight: 1.6 }}>{line.replace('- ', '')}</p>
             }
             if (line.trim()) {
-              return <p key={i} style={{ fontSize: 14, color: '#555', marginBottom: 8, lineHeight: 1.7 }}>{line}</p>
+              return <p key={i} style={{ color: '#555', marginBottom: 6, fontSize: 13, lineHeight: 1.6 }}>{line}</p>
             }
             return null
           })}
