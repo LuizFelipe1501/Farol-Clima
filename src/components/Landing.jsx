@@ -38,7 +38,7 @@ export default function Landing({ onEntrar, totalEstados, totalCapitais }) {
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(250,250,248,0.85)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Logo size={28} />
+            <Logo size={42} />
             <span style={{ fontFamily: "'DM Sans'", fontWeight: 800, fontSize: 15, color: '#0F766E', letterSpacing: '-0.02em' }}>FAROL CLIMA</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -57,6 +57,9 @@ export default function Landing({ onEntrar, totalEstados, totalCapitais }) {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.08)', padding: '5px 14px', borderRadius: 20, marginBottom: 32, border: '1px solid rgba(255,255,255,0.1)' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#34D399' }} />
             <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>Tribunal de Contas da União · ClimatonBrasil 2026</span>
+          </div>
+          <div style={{ marginBottom: 24 }}>
+            <Logo size={120} />
           </div>
           <h1 style={{ fontFamily: "'DM Sans'", fontSize: 'clamp(36px, 6vw, 64px)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.03em', marginBottom: 20, maxWidth: 700 }}>
             Seu estado está<br/><span style={{ color: '#5EEAD4' }}>preparado</span> para o<br/>El Niño 2026?

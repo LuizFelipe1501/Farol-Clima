@@ -22,7 +22,7 @@ export default function App() {
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FAFAF8' }}>
       <div style={{ textAlign: 'center' }}>
-        <Logo size={48} />
+        <Logo size={80} />
         <p style={{ color: '#999', fontSize: 13, marginTop: 12 }}>Carregando dados...</p>
       </div>
     </div>
@@ -38,7 +38,7 @@ export default function App() {
           {/* Left */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <button onClick={() => setPage('landing')} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer' }}>
-              <Logo size={24} />
+              <Logo size={36} />
               <span style={{ fontFamily: "'DM Sans'", fontWeight: 800, fontSize: 14, color: '#0F766E' }}>FAROL CLIMA</span>
             </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#999' }}>
