@@ -124,6 +124,85 @@ const ZONES = {
   GO: [
     {nome:'Jardim Novo Mundo',lat:-16.658,lon:-49.225,risco:'alto',tipo:'Enchente'},
     {nome:'Vila Mutirão',lat:-16.645,lon:-49.310,risco:'alto',tipo:'Alagamento'},
+    {nome:'Setor Pedro Ludovico',lat:-16.700,lon:-49.255,risco:'medio',tipo:'Alagamento'},
+  ],
+  AC: [
+    {nome:'Segundo Distrito',lat:-9.970,lon:-67.800,risco:'muito_alto',tipo:'Enchente do Rio Acre'},
+    {nome:'Seis de Agosto',lat:-9.985,lon:-67.825,risco:'muito_alto',tipo:'Enchente'},
+    {nome:'Taquari',lat:-9.960,lon:-67.835,risco:'alto',tipo:'Alagamento'},
+    {nome:'Preventório',lat:-9.955,lon:-67.795,risco:'medio',tipo:'Enchente sazonal'},
+  ],
+  AL: [
+    {nome:'Vergel do Lago',lat:-9.680,lon:-35.740,risco:'muito_alto',tipo:'Enchente/Maré'},
+    {nome:'Trapiche da Barra',lat:-9.685,lon:-35.745,risco:'alto',tipo:'Alagamento costeiro'},
+    {nome:'Benedito Bentes',lat:-9.610,lon:-35.770,risco:'alto',tipo:'Alagamento'},
+    {nome:'Tabuleiro do Martins',lat:-9.620,lon:-35.760,risco:'medio',tipo:'Deslizamento'},
+  ],
+  AP: [
+    {nome:'Buritizal',lat:0.030,lon:-51.055,risco:'alto',tipo:'Alagamento/Maré'},
+    {nome:'Laguinho',lat:0.025,lon:-51.065,risco:'alto',tipo:'Enchente'},
+    {nome:'Congós',lat:0.015,lon:-51.080,risco:'medio',tipo:'Alagamento'},
+  ],
+  ES: [
+    {nome:'São Pedro',lat:-20.310,lon:-40.305,risco:'muito_alto',tipo:'Deslizamento'},
+    {nome:'Grande Vitória (Cariacica)',lat:-20.355,lon:-40.420,risco:'muito_alto',tipo:'Deslizamento'},
+    {nome:'Jardim Camburi',lat:-20.270,lon:-40.280,risco:'alto',tipo:'Alagamento'},
+    {nome:'Praia do Suá',lat:-20.310,lon:-40.290,risco:'medio',tipo:'Enchente'},
+  ],
+  MA: [
+    {nome:'Coroadinho',lat:-2.535,lon:-44.260,risco:'muito_alto',tipo:'Alagamento'},
+    {nome:'Liberdade',lat:-2.520,lon:-44.275,risco:'alto',tipo:'Enchente'},
+    {nome:'Anil',lat:-2.510,lon:-44.285,risco:'alto',tipo:'Enchente/Maré'},
+    {nome:'Vila Palmeira',lat:-2.540,lon:-44.290,risco:'medio',tipo:'Alagamento'},
+  ],
+  MS: [
+    {nome:'Arnaldo Estêvão de Figueiredo',lat:-20.445,lon:-54.630,risco:'alto',tipo:'Enchente'},
+    {nome:'Anhanduizinho',lat:-20.505,lon:-54.600,risco:'alto',tipo:'Enchente do Rio Anhanduí'},
+    {nome:'Lagoa',lat:-20.460,lon:-54.610,risco:'medio',tipo:'Alagamento'},
+  ],
+  MT: [
+    {nome:'Ribeirão do Lipa',lat:-15.620,lon:-56.130,risco:'alto',tipo:'Enchente'},
+    {nome:'CPA (Centro Político)',lat:-15.580,lon:-56.090,risco:'alto',tipo:'Alagamento'},
+    {nome:'Pedra 90',lat:-15.640,lon:-56.050,risco:'alto',tipo:'Enchente do Rio Cuiabá'},
+    {nome:'Porto',lat:-15.610,lon:-56.100,risco:'medio',tipo:'Enchente sazonal'},
+  ],
+  PB: [
+    {nome:'Mandacaru',lat:-7.100,lon:-34.870,risco:'alto',tipo:'Alagamento'},
+    {nome:'São José',lat:-7.125,lon:-34.855,risco:'alto',tipo:'Enchente'},
+    {nome:'Alto do Mateus',lat:-7.105,lon:-34.900,risco:'medio',tipo:'Alagamento'},
+  ],
+  PI: [
+    {nome:'Poti Velho',lat:-5.060,lon:-42.805,risco:'muito_alto',tipo:'Enchente do Rio Poti'},
+    {nome:'Santa Maria da Codipi',lat:-5.045,lon:-42.830,risco:'alto',tipo:'Enchente'},
+    {nome:'Mocambinho',lat:-5.040,lon:-42.815,risco:'alto',tipo:'Alagamento'},
+    {nome:'Dirceu Arcoverde',lat:-5.110,lon:-42.760,risco:'medio',tipo:'Alagamento'},
+  ],
+  RN: [
+    {nome:'Mãe Luiza',lat:-5.780,lon:-35.190,risco:'muito_alto',tipo:'Deslizamento'},
+    {nome:'Quintas',lat:-5.810,lon:-35.225,risco:'alto',tipo:'Enchente'},
+    {nome:'Guarapes',lat:-5.830,lon:-35.260,risco:'alto',tipo:'Enchente do Rio Potengi'},
+    {nome:'Redinha',lat:-5.750,lon:-35.190,risco:'medio',tipo:'Erosão costeira'},
+  ],
+  RO: [
+    {nome:'Triângulo',lat:-8.750,lon:-63.910,risco:'muito_alto',tipo:'Enchente do Rio Madeira'},
+    {nome:'Nacional',lat:-8.745,lon:-63.895,risco:'alto',tipo:'Enchente'},
+    {nome:'Caladinho',lat:-8.760,lon:-63.880,risco:'alto',tipo:'Alagamento'},
+    {nome:'Agenor de Carvalho',lat:-8.780,lon:-63.920,risco:'medio',tipo:'Enchente sazonal'},
+  ],
+  RR: [
+    {nome:'Caçari',lat:2.810,lon:-60.680,risco:'alto',tipo:'Alagamento'},
+    {nome:'São Francisco',lat:2.830,lon:-60.695,risco:'alto',tipo:'Enchente do Rio Branco'},
+    {nome:'Tancredo Neves',lat:2.795,lon:-60.660,risco:'medio',tipo:'Alagamento'},
+  ],
+  SE: [
+    {nome:'Santa Maria',lat:-10.930,lon:-37.065,risco:'alto',tipo:'Enchente'},
+    {nome:'Porto D\'Antas',lat:-10.905,lon:-37.050,risco:'alto',tipo:'Alagamento'},
+    {nome:'Mosqueiro',lat:-10.870,lon:-37.040,risco:'medio',tipo:'Alagamento costeiro'},
+  ],
+  TO: [
+    {nome:'Aureny (Taquaralto)',lat:-10.240,lon:-48.330,risco:'alto',tipo:'Enchente'},
+    {nome:'Jardim Santa Helena',lat:-10.210,lon:-48.345,risco:'alto',tipo:'Alagamento'},
+    {nome:'Plano Diretor Norte',lat:-10.165,lon:-48.330,risco:'medio',tipo:'Drenagem'},
   ],
 }
 
