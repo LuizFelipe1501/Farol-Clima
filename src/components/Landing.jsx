@@ -51,28 +51,41 @@ export default function Landing({ onEntrar, totalEstados, totalCapitais }) {
       </nav>
 
       {/* Hero */}
-      <section style={{ background: 'linear-gradient(135deg, #042F2E 0%, #134E4A 30%, #0C4A6E 70%, #1E1B4B 100%)', color: 'white', padding: '120px 24px 80px', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ background: 'linear-gradient(135deg, #042F2E 0%, #134E4A 30%, #0C4A6E 70%, #1E1B4B 100%)', color: 'white', padding: '100px 24px 80px', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
         <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-        <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.08)', padding: '5px 14px', borderRadius: 20, marginBottom: 32, border: '1px solid rgba(255,255,255,0.1)' }}>
+
+        <div style={{ maxWidth: 800, margin: '0 auto', position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {/* Badge */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.08)', padding: '5px 14px', borderRadius: 20, marginBottom: 36, border: '1px solid rgba(255,255,255,0.1)' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#34D399' }} />
             <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>Tribunal de Contas da União · ClimatonBrasil 2026</span>
           </div>
-          <div style={{ marginBottom: 24 }}>
-            <Logo size={120} />
+
+          {/* Logo grande e centralizada */}
+          <div style={{ marginBottom: 32, padding: 20, borderRadius: 24, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <Logo size={180} />
           </div>
-          <h1 style={{ fontFamily: "'DM Sans'", fontSize: 'clamp(36px, 6vw, 64px)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.03em', marginBottom: 20, maxWidth: 700 }}>
-            Seu estado está<br/><span style={{ color: '#5EEAD4' }}>preparado</span> para o<br/>El Niño 2026?
+
+          {/* Subtítulo */}
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.2em', fontWeight: 600, marginBottom: 16 }}>
+            Ações & Prevenção Ambiental
+          </p>
+
+          {/* Headline */}
+          <h1 style={{ fontFamily: "'DM Sans'", fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 16 }}>
+            Seu estado está <span style={{ color: '#5EEAD4' }}>preparado</span><br/>para o El Niño 2026?
           </h1>
-          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.6)', maxWidth: 520, lineHeight: 1.6, marginBottom: 36 }}>
+
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 520, lineHeight: 1.7, marginBottom: 32 }}>
             Diagnóstico visual da governança climática dos 27 estados e 24 capitais a partir dos dados oficiais do Painel ClimaBrasil.
           </p>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <button onClick={onEntrar} style={{ fontSize: 14, fontWeight: 600, color: '#042F2E', background: '#5EEAD4', border: 'none', padding: '12px 28px', borderRadius: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
-              Explorar os dados <ArrowRight size={15} />
-            </button>
-          </div>
+
+          {/* CTA */}
+          <button onClick={onEntrar} style={{ fontSize: 15, fontWeight: 600, color: '#042F2E', background: '#5EEAD4', border: 'none', padding: '14px 36px', borderRadius: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+            Explorar os dados <ArrowRight size={16} />
+          </button>
         </div>
+
         <svg viewBox="0 0 1440 60" style={{ position: 'absolute', bottom: -1, left: 0, right: 0, width: '100%' }} preserveAspectRatio="none">
           <path d="M0,30 C360,60 720,0 1080,30 C1260,45 1380,15 1440,30 L1440,60 L0,60Z" fill="#FAFAF8"/>
         </svg>

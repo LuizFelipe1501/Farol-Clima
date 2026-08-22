@@ -131,8 +131,11 @@ export default function Dashboard({ ente, todos, onVoltar, onComparar }) {
         <DiagnosticoIA ente={ente} todos={todos} />
       </div>
 
-      {/* Ouvidoria */}
-      <OuvidoriaEstado uf={uf} nome={nome} />
+      {/* Ouvidoria + Iniciativas */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <OuvidoriaEstado uf={uf} nome={nome} />
+        <IniciativasEstado ente={ente} />
+      </div>
 
       {/* Dados complementares + Alertas + CPTEC */}
       <DadosComplementares uf={uf} />
@@ -158,9 +161,6 @@ export default function Dashboard({ ente, todos, onVoltar, onComparar }) {
           </ResponsiveContainer>
         </div>
       </div>
-
-      {/* Iniciativas */}
-      <IniciativasEstado ente={ente} />
 
       {/* Evidências da auditoria */}
       <ComentariosAuditoria ente={ente} />
