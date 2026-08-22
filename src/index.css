@@ -32,3 +32,14 @@
 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 2px; }
+
+/* Responsividade mobile */
+@media (min-width: 640px) {
+  .sm-show { display: inline !important; }
+}
+
+@media (max-width: 768px) {
+  .grid-responsive-2 { grid-template-columns: 1fr !important; }
+  .grid-responsive-4 { grid-template-columns: 1fr 1fr !important; }
+  .grid-pilares { grid-template-columns: 1fr !important; }
+}

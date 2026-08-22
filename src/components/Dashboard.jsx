@@ -126,13 +126,13 @@ export default function Dashboard({ ente, todos, onVoltar, onComparar }) {
       </div>
 
       {/* ═══ SEÇÃO PRINCIPAL: Mapa de risco + Diagnóstico IA lado a lado ═══ */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="grid-responsive-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <MapaRiscoEstado uf={uf} />
         <DiagnosticoIA ente={ente} todos={todos} />
       </div>
 
       {/* Ouvidoria + Iniciativas */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="grid-responsive-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <OuvidoriaEstado uf={uf} nome={nome} />
         <IniciativasEstado ente={ente} />
       </div>
@@ -140,13 +140,13 @@ export default function Dashboard({ ente, todos, onVoltar, onComparar }) {
       {/* Dados complementares + Alertas + CPTEC */}
       <DadosComplementares uf={uf} />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="grid-responsive-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <AlertasClima uf={uf} />
         <DadosCPTEC uf={uf} />
       </div>
 
       {/* Pilares + Radar */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 240px', gap: 16 }}>
+      <div className="grid-pilares" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 240px', gap: 16 }}>
         {Object.entries(PILARES).map(([key]) => (
           <PilarCard key={key} pilarKey={key} indicadores={indicadores} score={scores[key]} />
         ))}

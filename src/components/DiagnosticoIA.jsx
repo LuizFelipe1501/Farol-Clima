@@ -20,7 +20,7 @@ function buildPrompt(ente, top3) {
     `${e.nome} (${e.uf}): Nota geral=${e.scores.farol}`
   ).join(', ')
 
-  return `Você é um comunicador público que explica questões climáticas de forma simples e direta para cidadãos brasileiros comuns. Analise os dados abaixo sobre ${ente.nome} (${ente.uf}) e gere um diagnóstico que QUALQUER PESSOA consiga entender, mesmo sem conhecimento técnico.
+  return `Imagine que você é um jornalista local escrevendo uma matéria curta sobre a situação climática de ${ente.nome} (${ente.uf}) para um jornal de bairro. Use os dados abaixo.
 
 DADOS:
 Nota geral: ${ente.scores.farol}/100
@@ -28,32 +28,28 @@ ${resumo}
 
 Melhores do Brasil: ${top3Resumo}
 
-REGRAS DE LINGUAGEM:
-- Use frases curtas e palavras do dia a dia
-- Evite COMPLETAMENTE termos técnicos como "mitigação", "adaptação", "resiliência", "governança", "inventário de emissões". Quando precisar falar desses conceitos, use explicações simples como: "plano para reduzir a poluição", "preparação para enchentes e secas", "capacidade de se recuperar de desastres", "organização do governo", "contagem de quanto polui"
-- Use exemplos concretos: enchentes, calor forte, falta d'água, deslizamentos, queimadas
-- Fale como se estivesse explicando para um vizinho ou familiar
-- Use emojis moderadamente para tornar visual
+COMO ESCREVER:
+- Fale como gente, não como robô. Nada de listas perfeitas com 3 itens em cada seção.
+- Frases curtas. Palavras simples.
+- PROIBIDO usar: "mitigação", "adaptação", "resiliência", "governança", "inventário de emissões", "entes", "stakeholders". Se precisar falar desses conceitos, traduza: "plano pra poluir menos", "preparo pra enchentes e secas", "organização do governo pra lidar com o clima"
+- Pode usar emojis com moderação
+- Não use estruturas simétricas (tipo 3 problemas + 3 soluções + 3 ações). Varie.
 
-Gere EXATAMENTE neste formato:
+FORMATO (use esses títulos mas seja livre no conteúdo):
 
-## Como está ${ente.nome}?
-[2-3 frases simples explicando se o estado/cidade está bem preparado ou não para problemas do clima como enchentes, calor extremo, secas. Use comparações: "está entre os melhores", "está ficando para trás", "precisa melhorar muito"]
+## E aí, como está ${ente.nome}?
+[Comece direto com a situação. Pode ser duro se for ruim. Pode elogiar se for bom. Seja honesto. Compare com outros estados se ajudar a dar contexto.]
 
-## O que preocupa?
-- 🔴 [Problema 1 - explique de forma que um cidadão entenda o impacto no dia a dia]
-- 🟡 [Problema 2]
-- 🟡 [Problema 3]
+## O que mais preocupa
+[Fale dos problemas reais que isso causa na vida das pessoas. Enchentes, calor, falta d'água, queimadas. Não precisa ser uma lista certinha.]
 
-## O que pode ser feito?
-- ✅ [Ação 1 - concreta e compreensível, ex: "Criar um plano de emergência para quando chover muito forte"]
-- ✅ [Ação 2 - cite exemplos de outros estados que já fizeram isso]
-- ✅ [Ação 3]
+## O que dá pra fazer
+[Ações concretas. Cite estados que já fizeram algo parecido quando relevante. Seja prático.]
 
-## Você sabia?
-[1 frase com um dado ou comparação surpreendente para engajar o cidadão]
+## E o cidadão?
+[Uma ou duas coisas que a pessoa comum pode fazer pra cobrar ou contribuir. Pode ser cobrar o vereador, acompanhar pelo Farol Clima, ir na ouvidoria.]
 
-Máximo 280 palavras. Linguagem coloquial mas respeitosa.`
+Máximo 280 palavras. Tom de conversa, não de relatório.`
 }
 
 export default function DiagnosticoIA({ ente, todos }) {

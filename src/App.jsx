@@ -33,52 +33,50 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', background: '#FAFAF8' }}>
       {/* Nav */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(250,250,248,0.88)', backdropFilter: 'blur(16px)', borderBottom: '1px solid #e8e8e4' }}>
-        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 20px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {/* Left */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <button onClick={() => setPage('landing')} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer' }}>
-              <Logo size={36} />
-              <span style={{ fontFamily: "'DM Sans'", fontWeight: 800, fontSize: 14, color: '#0F766E' }}>FAROL CLIMA</span>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid #e8e8e4' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 16px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          {/* Logo + breadcrumb */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+            <button onClick={() => setPage('landing')} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>
+              <Logo size={34} />
+              <span style={{ fontFamily: "'DM Sans'", fontWeight: 800, fontSize: 14, color: '#0F766E', display: 'none' }} className="sm-show">FAROL CLIMA</span>
             </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#999' }}>
-              <button onClick={() => setPage('landing')} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontSize: 11 }}>Início</button>
-              <ChevronRight size={10} />
-              <button onClick={() => { setEnte(null); setTab('mapa') }} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontSize: 11 }}>{tipo === 'estados' ? 'Estados' : 'Capitais'}</button>
-              {ente && <><ChevronRight size={10} /><span style={{ color: '#555' }}>{ente.nome}</span></>}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#999', overflow: 'hidden' }}>
+              <ChevronRight size={10} style={{ flexShrink: 0 }} />
+              <button onClick={() => { setEnte(null); setTab('mapa') }} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontSize: 11, whiteSpace: 'nowrap' }}>{tipo === 'estados' ? 'Estados' : 'Capitais'}</button>
+              {ente && <><ChevronRight size={10} style={{ flexShrink: 0 }} /><span style={{ color: '#333', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 120 }}>{ente.nome}</span></>}
             </div>
           </div>
 
-          {/* Center */}
-          <div style={{ display: 'flex', gap: 2, background: '#f0f0ee', borderRadius: 8, padding: 2 }}>
-            {['estados', 'capitais'].map(t => (
-              <button key={t} onClick={() => { setTipo(t); setEnte(null); setTab('mapa') }} style={{
-                padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
-                background: tipo === t ? 'white' : 'transparent',
-                color: tipo === t ? '#0F766E' : '#888',
-                boxShadow: tipo === t ? '0 1px 3px rgba(0,0,0,0.08)' : 'none'
-              }}>
-                {t === 'estados' ? 'Estados' : 'Capitais'}
-              </button>
-            ))}
-          </div>
+          {/* Toggle + nav */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+            <div style={{ display: 'flex', gap: 1, background: '#f0f0ee', borderRadius: 8, padding: 2 }}>
+              {['estados', 'capitais'].map(t => (
+                <button key={t} onClick={() => { setTipo(t); setEnte(null); setTab('mapa') }} style={{
+                  padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer',
+                  background: tipo === t ? 'white' : 'transparent',
+                  color: tipo === t ? '#0F766E' : '#999',
+                  boxShadow: tipo === t ? '0 1px 3px rgba(0,0,0,0.06)' : 'none'
+                }}>
+                  {t === 'estados' ? 'Estados' : 'Capitais'}
+                </button>
+              ))}
+            </div>
 
-          {/* Right */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             {[
               { id: 'mapa', label: 'Mapa', icon: Map },
               { id: 'ranking', label: 'Ranking', icon: BarChart3 },
             ].map(({ id, label, icon: Icon }) => (
               <button key={id} onClick={() => { setTab(id); setEnte(null) }} style={{
-                display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 500, border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 7, fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer',
                 background: tab === id && !ente ? '#F0FDFA' : 'transparent',
-                color: tab === id && !ente ? '#0F766E' : '#888',
+                color: tab === id && !ente ? '#0F766E' : '#999',
               }}>
-                <Icon size={14} />{label}
+                <Icon size={13} /><span className="sm-show" style={{ display: 'none' }}>{label}</span>
               </button>
             ))}
-            <button onClick={() => { setCompEnte(null); setCompOpen(true) }} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 500, border: 'none', cursor: 'pointer', color: '#888', background: 'transparent' }}>
-              <GitCompareArrows size={14} />Comparar
+            <button onClick={() => { setCompEnte(null); setCompOpen(true) }} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 7, fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer', color: '#999' }}>
+              <GitCompareArrows size={13} /><span className="sm-show" style={{ display: 'none' }}>Comparar</span>
             </button>
           </div>
         </div>
