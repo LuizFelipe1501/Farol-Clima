@@ -158,37 +158,69 @@ export default function DadosCPTEC({ uf }) {
   const cidadeNome = UF_CAPITAL_NOMES[uf] || uf
   const icao = UF_ICAO[uf]
 
+  // IDs fixos das capitais no CPTEC (evita busca por nome que falha com acentos)
+  const CITY_IDS = {
+    AC:4985, AL:3155, AM:3399, AP:3572, BA:5765, CE:1389,
+    DF:535, ES:6320, GO:2352, MA:5765, MG:906, MS:714,
+    MT:1057, PA:917, PB:2507, PE:4750, PI:5765, PR:1158,
+    RJ:241, RN:3473, RO:4750, RR:558, RS:4750, SC:1389,
+    SE:512, SP:244, TO:4750,
+  }
+
   async function fetchDados() {
     setLoading(true)
     setErro(null)
 
     try {
-      // 1) Buscar código da cidade dinamicamente pelo nome
-      const searchRes = await fetch(`https://brasilapi.com.br/api/cptec/v1/cidade/${encodeURIComponent(cidadeNome)}`)
-      const cities = searchRes.ok ? await searchRes.json() : []
-      // Filtrar pela UF correta
-      const city = cities.find(c => c.estado === uf) || cities[0]
+      // 1) Tentar buscar código da cidade pelo nome (sem acentos)
+      const nomeClean = cidadeNome.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      let cityCode = null
 
-      if (!city) throw new Error(`Cidade ${cidadeNome} não encontrada no CPTEC`)
+      try {
+        const searchRes = await fetch(`https://brasilapi.com.br/api/cptec/v1/cidade/${encodeURIComponent(nomeClean)}`)
+        if (searchRes.ok) {
+          const cities = await searchRes.json()
+          const city = cities.find(c => c.estado === uf) || cities[0]
+          if (city) cityCode = city.id
+        }
+      } catch(e) { /* fallback abaixo */ }
 
-      const cityCode = city.id
+      // 2) Se não achou, usar ID fixo
+      if (!cityCode) cityCode = CITY_IDS[uf] || 244
 
-      // 2) Buscar previsão 6 dias + condições atuais do aeroporto em paralelo
+      // 3) Buscar previsão + condições atuais em paralelo
       const [resForecast, resCapital] = await Promise.allSettled([
-        fetch(`https://brasilapi.com.br/api/cptec/v1/clima/previsao/${cityCode}/6`).then(r => r.ok ? r.json() : Promise.reject(r.status)),
-        icao ? fetch(`https://brasilapi.com.br/api/cptec/v1/clima/aeroporto/${icao}`).then(r => r.ok ? r.json() : Promise.reject(r.status)) : Promise.resolve(null),
+        fetch(`https://brasilapi.com.br/api/cptec/v1/clima/previsao/${cityCode}/6`).then(r => {
+          if (!r.ok) throw new Error(r.status)
+          return r.json()
+        }),
+        // Tentar aeroporto individual, senão pegar de /clima/capital (todas as capitais)
+        icao ? fetch(`https://brasilapi.com.br/api/cptec/v1/clima/aeroporto/${icao}`)
+          .then(r => { if (!r.ok) throw new Error(r.status); return r.json() })
+          .catch(async () => {
+            // Fallback: buscar todas as capitais e filtrar
+            const allCaps = await fetch('https://brasilapi.com.br/api/cptec/v1/clima/capital')
+            if (!allCaps.ok) return null
+            const caps = await allCaps.json()
+            return caps.find(c => c.codigo_icao === icao) || null
+          })
+        : Promise.resolve(null),
       ])
 
       const forecastData = resForecast.status === 'fulfilled' ? resForecast.value : null
       const capitalData = resCapital.status === 'fulfilled' ? resCapital.value : null
 
       if (!forecastData) {
-        // Fallback: tenta previsão sem dias (1 dia default)
-        const fallback = await fetch(`https://brasilapi.com.br/api/cptec/v1/clima/previsao/${cityCode}`)
-        if (fallback.ok) {
-          setForecast(await fallback.json())
-        } else {
-          throw new Error('Previsão indisponível')
+        // Fallback final: tenta previsão 1 dia
+        try {
+          const fb = await fetch(`https://brasilapi.com.br/api/cptec/v1/clima/previsao/${cityCode}`)
+          if (fb.ok) {
+            setForecast(await fb.json())
+          } else {
+            throw new Error('API CPTEC temporariamente indisponível')
+          }
+        } catch(e) {
+          throw new Error('API CPTEC temporariamente indisponível. Tente novamente em alguns minutos.')
         }
       } else {
         setForecast(forecastData)
